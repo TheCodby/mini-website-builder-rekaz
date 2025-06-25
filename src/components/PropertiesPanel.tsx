@@ -13,7 +13,7 @@ export const PropertiesPanel = ({
 }: PropertiesPanelProps) => {
   if (!selectedSection) {
     return (
-      <div className="h-full flex flex-col">
+      <div className="h-full flex flex-col bg-white">
         <div className="p-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900">Properties</h2>
         </div>
@@ -35,7 +35,7 @@ export const PropertiesPanel = ({
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col bg-white">
       <div className="p-4 border-b border-gray-200">
         <h2 className="text-lg font-semibold text-gray-900">Properties</h2>
         <p className="text-sm text-gray-500 mt-1 capitalize">
@@ -53,7 +53,7 @@ export const PropertiesPanel = ({
               type="text"
               value={selectedSection.props.title || ""}
               onChange={(e) => handleInputChange("title", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
               placeholder="Enter title..."
             />
           </div>
@@ -68,7 +68,7 @@ export const PropertiesPanel = ({
               type="text"
               value={selectedSection.props.subtitle || ""}
               onChange={(e) => handleInputChange("subtitle", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
               placeholder="Enter subtitle..."
             />
           </div>
@@ -83,7 +83,7 @@ export const PropertiesPanel = ({
               value={selectedSection.props.description || ""}
               onChange={(e) => handleInputChange("description", e.target.value)}
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 resize-none"
               placeholder="Enter description..."
             />
           </div>
@@ -98,8 +98,23 @@ export const PropertiesPanel = ({
               type="text"
               value={selectedSection.props.buttonText || ""}
               onChange={(e) => handleInputChange("buttonText", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
               placeholder="Enter button text..."
+            />
+          </div>
+        )}
+
+        {selectedSection.props.buttonUrl !== undefined && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Button URL
+            </label>
+            <input
+              type="url"
+              value={selectedSection.props.buttonUrl || ""}
+              onChange={(e) => handleInputChange("buttonUrl", e.target.value)}
+              className="w-full px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
+              placeholder="https://example.com"
             />
           </div>
         )}
@@ -110,14 +125,25 @@ export const PropertiesPanel = ({
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Background Color
               </label>
-              <input
-                type="color"
-                value={selectedSection.props.backgroundColor || "#ffffff"}
-                onChange={(e) =>
-                  handleInputChange("backgroundColor", e.target.value)
-                }
-                className="w-full h-10 border border-gray-300 rounded-md cursor-pointer"
-              />
+              <div className="flex items-center space-x-3">
+                <input
+                  type="color"
+                  value={selectedSection.props.backgroundColor || "#ffffff"}
+                  onChange={(e) =>
+                    handleInputChange("backgroundColor", e.target.value)
+                  }
+                  className="w-12 h-10 border border-gray-300 rounded-md cursor-pointer"
+                />
+                <input
+                  type="text"
+                  value={selectedSection.props.backgroundColor || "#ffffff"}
+                  onChange={(e) =>
+                    handleInputChange("backgroundColor", e.target.value)
+                  }
+                  className="flex-1 px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 font-mono text-sm"
+                  placeholder="#ffffff"
+                />
+              </div>
             </div>
           )}
 
@@ -126,25 +152,40 @@ export const PropertiesPanel = ({
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Text Color
               </label>
-              <input
-                type="color"
-                value={selectedSection.props.textColor || "#000000"}
-                onChange={(e) => handleInputChange("textColor", e.target.value)}
-                className="w-full h-10 border border-gray-300 rounded-md cursor-pointer"
-              />
+              <div className="flex items-center space-x-3">
+                <input
+                  type="color"
+                  value={selectedSection.props.textColor || "#000000"}
+                  onChange={(e) =>
+                    handleInputChange("textColor", e.target.value)
+                  }
+                  className="w-12 h-10 border border-gray-300 rounded-md cursor-pointer"
+                />
+                <input
+                  type="text"
+                  value={selectedSection.props.textColor || "#000000"}
+                  onChange={(e) =>
+                    handleInputChange("textColor", e.target.value)
+                  }
+                  className="flex-1 px-3 py-2 bg-white text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 font-mono text-sm"
+                  placeholder="#000000"
+                />
+              </div>
             </div>
           )}
         </div>
       </div>
 
-      <div className="p-4 border-t border-gray-200 space-y-2">
-        <button
-          onClick={() => onDeleteSection?.(selectedSection.id)}
-          className="w-full px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors font-medium"
-        >
-          Delete Section
-        </button>
-      </div>
+      {onDeleteSection && (
+        <div className="p-4 border-t border-gray-200 space-y-2">
+          <button
+            onClick={() => onDeleteSection(selectedSection.id)}
+            className="w-full px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors font-medium border border-red-200"
+          >
+            Delete Section
+          </button>
+        </div>
+      )}
     </div>
   );
 };

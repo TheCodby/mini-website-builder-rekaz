@@ -1,4 +1,5 @@
 import type { Section } from "@/types/builder";
+import { SectionRenderer } from "./SectionRenderer";
 
 interface BuilderAreaProps {
   sections: Section[];
@@ -36,20 +37,73 @@ export const BuilderArea = ({
     );
   }
 
+  const sortedSections = [...sections].sort((a, b) => a.order - b.order);
+
   return (
-    <div className="h-full overflow-auto bg-white">
-      <div className="p-8">
-        <div className="text-center text-gray-500">
-          <h3 className="text-lg font-semibold mb-2">
-            Builder Area (Coming Soon)
-          </h3>
-          <p className="text-sm">
-            This will show your website sections when you add them.
-          </p>
-          <div className="mt-4 text-xs text-gray-400">
-            Sections added: {sections.length}
+    <div
+      className={`h-full overflow-auto ${
+        isPreviewMode ? "bg-white" : "bg-gray-50"
+      }`}
+    >
+      <div className={`${isPreviewMode ? "" : "p-4"}`}>
+        {!isPreviewMode && (
+          <div className="mb-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Website Preview
+              </h2>
+              <div className="text-sm text-gray-500">
+                {sections.length} section{sections.length !== 1 ? "s" : ""}
+              </div>
+            </div>
+            <p className="text-sm text-gray-600 mt-1">
+              Click on any section to edit its properties
+            </p>
           </div>
+        )}
+
+        <div className={`${isPreviewMode ? "" : "space-y-4"}`}>
+          {sortedSections.map((section) => (
+            <div
+              key={section.id}
+              className={`${
+                isPreviewMode
+                  ? ""
+                  : "border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200"
+              }`}
+            >
+              <SectionRenderer
+                section={section}
+                isSelected={selectedSectionId === section.id}
+                isPreviewMode={isPreviewMode}
+                onSelectSection={onSelectSection}
+              />
+            </div>
+          ))}
         </div>
+
+        {!isPreviewMode && sections.length > 0 && (
+          <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start space-x-3">
+              <div className="text-blue-500 text-xl">ℹ️</div>
+              <div>
+                <h4 className="text-sm font-medium text-blue-900 mb-1">
+                  Builder Tips
+                </h4>
+                <ul className="text-xs text-blue-700 space-y-1">
+                  <li>• Click on any section to select and edit it</li>
+                  <li>
+                    • Use the properties panel on the right to customize
+                    sections
+                  </li>
+                  <li>
+                    • Toggle preview mode to see how your site looks to visitors
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
