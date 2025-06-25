@@ -37,6 +37,7 @@ export const HeroSection = memo<HeroSectionProps>(
     // Calculate contrast for button styling
     const isLightBackground = (color: string) => {
       const hex = color.replace("#", "");
+      if (hex.length !== 6) return false;
       const r = parseInt(hex.substr(0, 2), 16);
       const g = parseInt(hex.substr(2, 2), 16);
       const b = parseInt(hex.substr(4, 2), 16);
@@ -53,7 +54,7 @@ export const HeroSection = memo<HeroSectionProps>(
 
     return (
       <section
-        className={`relative min-h-96 flex items-center justify-center px-6 py-16 transition-all duration-200 ${
+        className={`relative min-h-[50vh] sm:min-h-[60vh] lg:min-h-[70vh] xl:min-h-[80vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 transition-all duration-200 ${
           !isPreviewMode ? "cursor-pointer" : ""
         } ${
           isSelected && !isPreviewMode
@@ -77,15 +78,15 @@ export const HeroSection = memo<HeroSectionProps>(
         }}
       >
         <div
-          className="text-center max-w-4xl mx-auto"
+          className="text-center max-w-4xl mx-auto w-full"
           style={{ color: textColor || "#ffffff" }}
         >
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 lg:mb-8 leading-tight">
             {title}
           </h1>
 
           {subtitle && (
-            <p className="text-xl md:text-2xl mb-8 opacity-90 leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-6 sm:mb-8 lg:mb-10 opacity-95 leading-relaxed max-w-3xl mx-auto">
               {subtitle}
             </p>
           )}
@@ -93,7 +94,7 @@ export const HeroSection = memo<HeroSectionProps>(
           {buttonText && (
             <button
               onClick={handleButtonClick}
-              className="inline-flex items-center px-8 py-4 font-semibold rounded-lg hover:opacity-90 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-lg"
+              className="inline-flex items-center px-6 py-3 sm:px-8 sm:py-4 lg:px-10 lg:py-4 font-semibold text-sm sm:text-base lg:text-lg rounded-lg hover:opacity-90 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-lg touch-target min-h-[44px]"
               style={{
                 backgroundColor: buttonBgColor,
                 color: buttonTextColor,
@@ -109,7 +110,7 @@ export const HeroSection = memo<HeroSectionProps>(
         </div>
 
         {!isPreviewMode && (
-          <div className="absolute top-4 left-4 bg-black bg-opacity-75 text-white px-3 py-1 rounded text-sm font-medium backdrop-blur-sm">
+          <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-black bg-opacity-75 text-white px-2 py-1 sm:px-3 sm:py-1 rounded text-xs sm:text-sm font-medium backdrop-blur-sm">
             Hero Section
           </div>
         )}

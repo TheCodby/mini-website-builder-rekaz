@@ -2,6 +2,9 @@ import type { SectionTemplate } from "@/types/builder";
 
 interface SectionLibraryProps {
   onAddSection: (template: SectionTemplate) => void;
+  isMobile?: boolean;
+  isTablet?: boolean;
+  collapsed?: boolean;
 }
 
 const sectionTemplates: SectionTemplate[] = [
@@ -9,7 +12,8 @@ const sectionTemplates: SectionTemplate[] = [
     id: "hero-1",
     name: "Hero Section",
     type: "hero",
-    description: "A bold hero section with title, subtitle, and CTA button",
+    description:
+      "Eye-catching hero section with title, subtitle, and call-to-action button",
     preview: "🎯",
     defaultProps: {
       title: "Welcome to Our Website",
@@ -61,43 +65,114 @@ const sectionTemplates: SectionTemplate[] = [
   },
 ];
 
-export const SectionLibrary = ({ onAddSection }: SectionLibraryProps) => {
+export const SectionLibrary = ({
+  onAddSection,
+  isMobile = false,
+  isTablet = false,
+  collapsed = false,
+}: SectionLibraryProps) => {
   return (
-    <div className="h-full flex flex-col">
-      <div className="p-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900">Section Library</h2>
-        <p className="text-sm text-gray-500 mt-1">
-          Click to add sections to your page
-        </p>
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
-        {sectionTemplates.map((template) => (
-          <button
-            key={template.id}
-            onClick={() => onAddSection(template)}
-            className="w-full p-4 bg-white border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all duration-200 text-left group"
-          >
-            <div className="flex items-start space-x-3">
-              <div className="text-2xl">{template.preview}</div>
-              <div className="flex-1">
-                <h3 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
-                  {template.name}
-                </h3>
-                <p className="text-sm text-gray-500 mt-1">
-                  {template.description}
-                </p>
+    <div className={`${isMobile ? "" : "h-full flex flex-col"} bg-white`}>
+      {/* Header - show for desktop and collapsed tablet */}
+      {!isMobile && (
+        <div
+          className={`${
+            isTablet && collapsed ? "p-3" : "p-6"
+          } border-b border-gray-200`}
+        >
+          {isTablet && collapsed ? (
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mb-2">
+                <svg
+                  className="w-4 h-4 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                  />
+                </svg>
               </div>
+              <span className="text-xs text-gray-500 text-center">Library</span>
             </div>
-          </button>
-        ))}
+          ) : (
+            <>
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                Section Library
+              </h2>
+              <p className="text-sm text-gray-500">
+                Click to add sections to your page
+              </p>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Section Grid */}
+      <div
+        className={`${isMobile ? "" : "flex-1 overflow-y-auto"} ${
+          isTablet && collapsed ? "p-2" : "p-6"
+        }`}
+      >
+        <div className="grid gap-4">
+          {sectionTemplates.map((template) => (
+            <button
+              key={template.id}
+              onClick={() => onAddSection(template)}
+              className="w-full bg-white border-2 border-gray-200 rounded-xl p-4 text-left hover:border-blue-300 hover:shadow-lg transition-all duration-200 group"
+              aria-label={`Add ${template.name}`}
+            >
+              <div className="flex items-start space-x-4">
+                {/* Icon */}
+                <div className="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl group-hover:bg-blue-100 transition-colors duration-200">
+                  {template.preview}
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-200 mb-1">
+                    {template.name}
+                  </h3>
+                  <p className="text-sm text-gray-500 leading-relaxed">
+                    {template.description}
+                  </p>
+                </div>
+
+                {/* Add icon */}
+                <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <svg
+                    className="w-5 h-5 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div className="p-4 border-t border-gray-200 bg-gray-25">
-        <p className="text-xs text-gray-400 text-center">
-          More section types coming soon
-        </p>
-      </div>
+      {/* Footer - only show when not in mobile overlay */}
+      {!isMobile && (
+        <div className="p-6 border-t border-gray-200 bg-gray-50">
+          <div className="text-center">
+            <p className="text-sm text-gray-500 mb-2">Need more sections?</p>
+            <p className="text-xs text-gray-400">More templates coming soon</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

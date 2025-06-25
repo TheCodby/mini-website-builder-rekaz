@@ -11,14 +11,26 @@ interface SectionRendererProps {
   section: Section;
   isSelected?: boolean;
   isPreviewMode?: boolean;
-  onSelectSection?: (sectionId: string) => void;
+  onClick?: () => void;
+  onSelectSection?: (sectionId: string) => void; // Keep for backward compatibility
 }
 
 export const SectionRenderer = memo<SectionRendererProps>(
-  ({ section, isSelected = false, isPreviewMode = false, onSelectSection }) => {
+  ({
+    section,
+    isSelected = false,
+    isPreviewMode = false,
+    onClick,
+    onSelectSection,
+  }) => {
     const handleSectionClick = () => {
-      if (!isPreviewMode && onSelectSection) {
-        onSelectSection(section.id);
+      if (!isPreviewMode) {
+        // Use onClick if provided, otherwise use onSelectSection for backward compatibility
+        if (onClick) {
+          onClick();
+        } else if (onSelectSection) {
+          onSelectSection(section.id);
+        }
       }
     };
 

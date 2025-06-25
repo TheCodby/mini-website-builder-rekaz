@@ -25,7 +25,7 @@ export const ContentSection = memo<ContentSectionProps>(
 
     return (
       <section
-        className={`relative w-full px-6 py-16 transition-all duration-200 ${
+        className={`relative w-full px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 xl:py-24 transition-all duration-200 ${
           !isPreviewMode ? "cursor-pointer" : ""
         } ${
           isSelected && !isPreviewMode
@@ -55,14 +55,14 @@ export const ContentSection = memo<ContentSectionProps>(
           style={{ color: textColor || "#374151" }}
         >
           {title && (
-            <h2 className="text-3xl md:text-4xl font-bold mb-8 leading-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 lg:mb-10 leading-tight">
               {title}
             </h2>
           )}
 
           {description && (
-            <div className="prose prose-lg mx-auto">
-              <p className="text-lg md:text-xl leading-relaxed opacity-90">
+            <div className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl mx-auto max-w-none">
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed opacity-90 max-w-3xl mx-auto">
                 {description}
               </p>
             </div>
@@ -70,7 +70,7 @@ export const ContentSection = memo<ContentSectionProps>(
         </div>
 
         {!isPreviewMode && (
-          <div className="absolute top-4 left-4 bg-black bg-opacity-75 text-white px-3 py-1 rounded text-sm font-medium backdrop-blur-sm">
+          <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-black bg-opacity-75 text-white px-2 py-1 sm:px-3 sm:py-1 rounded text-xs sm:text-sm font-medium backdrop-blur-sm">
             Content Section
           </div>
         )}
