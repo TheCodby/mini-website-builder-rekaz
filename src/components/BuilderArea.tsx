@@ -134,17 +134,17 @@ export const BuilderArea = memo<BuilderAreaProps>(
                     onClick={() => handleSectionClick(section.id)}
                   />
 
-                  {/* Section indicator */}
-                  {!isPreviewMode && (
+                  {/* Section indicator - shows on hover when not selected */}
+                  {!isPreviewMode && selectedSectionId !== section.id && (
                     <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm border border-gray-200 text-gray-600 px-3 py-1 rounded-full text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                       Section {index + 1}
                     </div>
                   )}
 
-                  {/* Selection indicator */}
+                  {/* Selection indicator - shows section number when selected */}
                   {!isPreviewMode && selectedSectionId === section.id && (
-                    <div className="absolute top-4 left-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                      Selected
+                    <div className="absolute top-4 right-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                      Section {index + 1} • Selected
                     </div>
                   )}
                 </div>
