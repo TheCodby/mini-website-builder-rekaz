@@ -46,6 +46,38 @@ export interface SectionTemplate {
   preview: string; // svg or image path
 }
 
+/**
+ * Undo/Redo System Types
+ * Following Command Pattern for clean separation of concerns
+ */
+export type HistoryActionType =
+  | "ADD_SECTION"
+  | "UPDATE_SECTION"
+  | "DELETE_SECTION"
+  | "REORDER_SECTIONS";
+
+export interface HistoryAction {
+  readonly id: string;
+  readonly type: HistoryActionType;
+  readonly timestamp: number;
+  readonly description: string;
+  readonly previousState: HistoryableState;
+  readonly newState: HistoryableState;
+}
+
+/**
+ * Only content that affects the actual website should be in history
+ * UI state like selectedSectionId and isPreviewMode are excluded
+ */
+export interface HistoryableState {
+  readonly sections: Section[];
+}
+
+export interface HistoryState {
+  readonly actions: HistoryAction[];
+  readonly currentIndex: number;
+}
+
 export type SectionWithoutOrder = Omit<Section, "order">;
 export type PartialSectionProps = Partial<SectionProps>;
 export type SectionUpdate = Pick<Section, "id"> & {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "./Header";
 import { SectionLibrary } from "./SectionLibrary";
 import { BuilderArea } from "./BuilderArea";
@@ -11,12 +11,57 @@ import { useResponsive } from "@/hooks/useResponsive";
 import type { SectionTemplate } from "@/types/builder";
 
 export const WebsiteBuilder = () => {
-  const { builderState, actions } = useBuilderState();
+  const { builderState, historyInfo, actions } = useBuilderState();
   const { isMobile, isTablet, isHydrated } = useResponsive();
   const [showLibrary, setShowLibrary] = useState(false);
   const [showProperties, setShowProperties] = useState(false);
   const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false);
   const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(false);
+
+  /**
+   * Global keyboard shortcuts for undo/redo
+   * Following clean code principles with proper cleanup
+   */
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Only handle shortcuts when not in an input field
+      const target = event.target as HTMLElement;
+      const isInputField =
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.contentEditable === "true";
+
+      if (isInputField) return;
+
+      // Handle Ctrl/Cmd + Z/Y shortcuts
+      if (event.ctrlKey || event.metaKey) {
+        switch (event.key.toLowerCase()) {
+          case "z":
+            if (event.shiftKey) {
+              // Ctrl+Shift+Z = Redo
+              event.preventDefault();
+              actions.handleRedo();
+            } else {
+              // Ctrl+Z = Undo
+              event.preventDefault();
+              actions.handleUndo();
+            }
+            break;
+          case "y":
+            // Ctrl+Y = Redo (Windows standard)
+            event.preventDefault();
+            actions.handleRedo();
+            break;
+        }
+      }
+    };
+
+    // Only add listeners after hydration to avoid SSR issues
+    if (isHydrated) {
+      document.addEventListener("keydown", handleKeyDown);
+      return () => document.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [actions, isHydrated]);
 
   const selectedSection = builderState.sections.find(
     (s) => s.id === builderState.selectedSectionId
@@ -107,6 +152,11 @@ export const WebsiteBuilder = () => {
             isPreviewMode={builderState.isPreviewMode}
             onTogglePreview={actions.handleTogglePreview}
             isMobile={true}
+            onUndo={actions.handleUndo}
+            onRedo={actions.handleRedo}
+            canUndo={historyInfo.canUndo}
+            canRedo={historyInfo.canRedo}
+            lastAction={historyInfo.lastAction?.description}
           />
 
           {/* Mobile: Stack panels with overlays */}
@@ -251,6 +301,11 @@ export const WebsiteBuilder = () => {
             }
             leftSidebarCollapsed={leftSidebarCollapsed}
             rightSidebarCollapsed={rightSidebarCollapsed}
+            onUndo={actions.handleUndo}
+            onRedo={actions.handleRedo}
+            canUndo={historyInfo.canUndo}
+            canRedo={historyInfo.canRedo}
+            lastAction={historyInfo.lastAction?.description}
           />
 
           <div className="flex-1 flex overflow-hidden">
@@ -304,6 +359,11 @@ export const WebsiteBuilder = () => {
         <Header
           isPreviewMode={builderState.isPreviewMode}
           onTogglePreview={actions.handleTogglePreview}
+          onUndo={actions.handleUndo}
+          onRedo={actions.handleRedo}
+          canUndo={historyInfo.canUndo}
+          canRedo={historyInfo.canRedo}
+          lastAction={historyInfo.lastAction?.description}
         />
 
         <div className="flex-1 flex overflow-hidden">

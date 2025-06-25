@@ -2,6 +2,7 @@ import { memo, useState } from "react";
 import type { SectionProps } from "@/types/builder";
 
 interface HeaderSectionProps extends SectionProps {
+  sectionId?: string;
   isSelected?: boolean;
   isPreviewMode?: boolean;
   onClick?: () => void;
@@ -9,6 +10,7 @@ interface HeaderSectionProps extends SectionProps {
 
 export const HeaderSection = memo<HeaderSectionProps>(
   ({
+    sectionId,
     title = "Your Brand",
     backgroundColor = "#ffffff",
     textColor = "#1f2937",
@@ -41,6 +43,7 @@ export const HeaderSection = memo<HeaderSectionProps>(
 
     return (
       <header
+        data-section-id={sectionId}
         className={`relative w-full px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-b transition-all duration-200 ${
           !isPreviewMode ? "cursor-pointer" : ""
         } ${

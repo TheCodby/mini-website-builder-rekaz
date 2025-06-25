@@ -2,6 +2,7 @@ import { memo } from "react";
 import type { SectionProps } from "@/types/builder";
 
 interface HeroSectionProps extends SectionProps {
+  sectionId?: string;
   isSelected?: boolean;
   isPreviewMode?: boolean;
   onClick?: () => void;
@@ -9,6 +10,7 @@ interface HeroSectionProps extends SectionProps {
 
 export const HeroSection = memo<HeroSectionProps>(
   ({
+    sectionId,
     title = "Welcome to Our Website",
     subtitle = "Create amazing experiences with our platform",
     buttonText = "Get Started",
@@ -54,6 +56,7 @@ export const HeroSection = memo<HeroSectionProps>(
 
     return (
       <section
+        data-section-id={sectionId}
         className={`relative min-h-[50vh] sm:min-h-[60vh] lg:min-h-[70vh] xl:min-h-[80vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 transition-all duration-200 ${
           !isPreviewMode ? "cursor-pointer" : ""
         } ${

@@ -36,6 +36,7 @@ export const SectionRenderer = memo<SectionRendererProps>(
 
     const commonProps = {
       ...section.props,
+      sectionId: section.id,
       isSelected,
       isPreviewMode,
       onClick: handleSectionClick,
@@ -58,6 +59,7 @@ export const SectionRenderer = memo<SectionRendererProps>(
         // Graceful fallback for unknown section types
         return (
           <div
+            data-section-id={section.id}
             className={`relative p-8 bg-gray-100 border-2 border-dashed border-gray-300 text-center transition-all duration-200 ${
               !isPreviewMode ? "cursor-pointer" : ""
             } ${

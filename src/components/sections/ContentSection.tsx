@@ -2,6 +2,7 @@ import { memo } from "react";
 import type { SectionProps } from "@/types/builder";
 
 interface ContentSectionProps extends SectionProps {
+  sectionId?: string;
   isSelected?: boolean;
   isPreviewMode?: boolean;
   onClick?: () => void;
@@ -9,6 +10,7 @@ interface ContentSectionProps extends SectionProps {
 
 export const ContentSection = memo<ContentSectionProps>(
   ({
+    sectionId,
     title = "About Us",
     description = "Tell your story and connect with your audience through compelling content.",
     backgroundColor = "#ffffff",
@@ -25,6 +27,7 @@ export const ContentSection = memo<ContentSectionProps>(
 
     return (
       <section
+        data-section-id={sectionId}
         className={`relative w-full px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 xl:py-24 transition-all duration-200 ${
           !isPreviewMode ? "cursor-pointer" : ""
         } ${

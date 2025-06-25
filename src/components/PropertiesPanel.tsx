@@ -1,11 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import type { Section, SectionProps } from "@/types/builder";
 
 interface PropertiesPanelProps {
   selectedSection: Section | undefined;
-  onUpdateSection: (sectionId: string, props: SectionProps) => void;
+  onUpdateSection: (
+    sectionId: string,
+    props: SectionProps,
+    shouldCreateHistory?: boolean
+  ) => void;
   onDeleteSection?: (sectionId: string) => void;
   isMobile?: boolean;
   isTablet?: boolean;
@@ -22,13 +26,173 @@ export const PropertiesPanel = ({
 }: PropertiesPanelProps) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const handleInputChange = (key: string, value: string) => {
-    if (!selectedSection) return;
-    onUpdateSection(selectedSection.id, {
-      ...selectedSection.props,
-      [key]: value,
-    });
-  };
+  // Local state for immediate UI updates (optimistic updates)
+  const [localProps, setLocalProps] = useState<SectionProps>({});
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const pendingUpdatesRef = useRef<SectionProps>({});
+
+  // High-performance color dragging state
+  const colorDragStateRef = useRef({
+    isDragging: false,
+    dragStartValue: "",
+    currentProperty: "",
+    sectionElement: null as HTMLElement | null,
+    originalValue: "",
+  });
+  const colorCommitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Update local state when selected section changes
+  useEffect(() => {
+    if (selectedSection) {
+      setLocalProps(selectedSection.props);
+      pendingUpdatesRef.current = {};
+
+      // Find the section element for direct DOM manipulation
+      const sectionElement = document.querySelector(
+        `[data-section-id="${selectedSection.id}"]`
+      ) as HTMLElement;
+      colorDragStateRef.current.sectionElement = sectionElement;
+    }
+  }, [selectedSection?.id]);
+
+  /**
+   * Debounced update function that batches rapid changes
+   * This prevents every keystroke from creating history entries
+   */
+  const debouncedUpdate = useCallback(() => {
+    if (selectedSection && Object.keys(pendingUpdatesRef.current).length > 0) {
+      const finalProps = {
+        ...selectedSection.props,
+        ...pendingUpdatesRef.current,
+      };
+      onUpdateSection(selectedSection.id, finalProps);
+      pendingUpdatesRef.current = {};
+    }
+  }, [selectedSection, onUpdateSection]);
+
+  /**
+   * Ultra-high-performance color change handler
+   * Uses direct DOM manipulation to avoid React re-renders entirely
+   */
+  const handleColorChange = useCallback(
+    (property: string, value: string, isFromColorPicker: boolean = false) => {
+      if (!selectedSection) return;
+
+      // Always update local state for form inputs
+      const newLocalProps = { ...localProps, [property]: value };
+      setLocalProps(newLocalProps);
+
+      // Track pending changes for final commit
+      pendingUpdatesRef.current = {
+        ...pendingUpdatesRef.current,
+        [property]: value,
+      };
+
+      if (isFromColorPicker) {
+        const dragState = colorDragStateRef.current;
+
+        // Start drag tracking
+        if (!dragState.isDragging) {
+          dragState.isDragging = true;
+          dragState.dragStartValue =
+            (selectedSection.props[property as keyof SectionProps] as string) ||
+            "";
+          dragState.currentProperty = property;
+          dragState.originalValue = dragState.dragStartValue;
+        }
+
+        // Direct DOM manipulation for instant visual feedback (ZERO React re-renders)
+        if (dragState.sectionElement) {
+          if (property === "backgroundColor") {
+            dragState.sectionElement.style.backgroundColor = value;
+          } else if (property === "textColor") {
+            // Update text color for all text elements within the section
+            const textElements = dragState.sectionElement.querySelectorAll(
+              'h1, h2, h3, h4, h5, h6, p, span, div[style*="color"]'
+            );
+            textElements.forEach((el) => {
+              (el as HTMLElement).style.color = value;
+            });
+          }
+        }
+
+        // Clear existing commit timeout
+        if (colorCommitTimeoutRef.current) {
+          clearTimeout(colorCommitTimeoutRef.current);
+        }
+
+        // Set timeout to commit changes when dragging stops
+        colorCommitTimeoutRef.current = setTimeout(() => {
+          // Dragging has stopped - commit to history
+          if (dragState.isDragging) {
+            dragState.isDragging = false;
+
+            // Only create history if value actually changed
+            if (dragState.originalValue !== value) {
+              debouncedUpdate();
+            }
+
+            // Reset drag state
+            dragState.dragStartValue = "";
+            dragState.currentProperty = "";
+            dragState.originalValue = "";
+          }
+        }, 300); // Short timeout to detect end of dragging
+      } else {
+        // For text input changes, use normal debouncing
+        if (debounceTimeoutRef.current) {
+          clearTimeout(debounceTimeoutRef.current);
+        }
+
+        debounceTimeoutRef.current = setTimeout(() => {
+          debouncedUpdate();
+        }, 300);
+      }
+    },
+    [selectedSection, localProps, debouncedUpdate]
+  );
+
+  /**
+   * Handle regular input changes with normal debouncing
+   */
+  const handleInputChange = useCallback(
+    (key: string, value: string) => {
+      if (!selectedSection) return;
+
+      // Immediate UI update for responsive feel
+      const newLocalProps = { ...localProps, [key]: value };
+      setLocalProps(newLocalProps);
+
+      // Track pending changes
+      pendingUpdatesRef.current = {
+        ...pendingUpdatesRef.current,
+        [key]: value,
+      };
+
+      // Clear existing timeout
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+
+      // Normal debouncing for text inputs
+      debounceTimeoutRef.current = setTimeout(() => {
+        debouncedUpdate();
+      }, 300);
+    },
+    [selectedSection, localProps, debouncedUpdate]
+  );
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+      if (colorCommitTimeoutRef.current) {
+        clearTimeout(colorCommitTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleDeleteClick = () => {
     setShowDeleteModal(true);
@@ -147,7 +311,7 @@ export const PropertiesPanel = ({
               </label>
               <input
                 type="text"
-                value={selectedSection.props.title || ""}
+                value={localProps.title || ""}
                 onChange={(e) => handleInputChange("title", e.target.value)}
                 className="w-full px-4 py-3 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 transition-colors"
                 placeholder="Enter title..."
@@ -162,7 +326,7 @@ export const PropertiesPanel = ({
               </label>
               <input
                 type="text"
-                value={selectedSection.props.subtitle || ""}
+                value={localProps.subtitle || ""}
                 onChange={(e) => handleInputChange("subtitle", e.target.value)}
                 className="w-full px-4 py-3 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 transition-colors"
                 placeholder="Enter subtitle..."
@@ -176,7 +340,7 @@ export const PropertiesPanel = ({
                 Description
               </label>
               <textarea
-                value={selectedSection.props.description || ""}
+                value={localProps.description || ""}
                 onChange={(e) =>
                   handleInputChange("description", e.target.value)
                 }
@@ -195,7 +359,7 @@ export const PropertiesPanel = ({
                 </label>
                 <input
                   type="text"
-                  value={selectedSection.props.buttonText || ""}
+                  value={localProps.buttonText || ""}
                   onChange={(e) =>
                     handleInputChange("buttonText", e.target.value)
                   }
@@ -211,7 +375,7 @@ export const PropertiesPanel = ({
                   </label>
                   <input
                     type="url"
-                    value={selectedSection.props.buttonUrl || ""}
+                    value={localProps.buttonUrl || ""}
                     onChange={(e) =>
                       handleInputChange("buttonUrl", e.target.value)
                     }
@@ -238,15 +402,15 @@ export const PropertiesPanel = ({
               <div className="flex items-center space-x-4">
                 <input
                   type="color"
-                  value={selectedSection.props.backgroundColor || "#ffffff"}
+                  value={localProps.backgroundColor || "#ffffff"}
                   onChange={(e) =>
-                    handleInputChange("backgroundColor", e.target.value)
+                    handleColorChange("backgroundColor", e.target.value, true)
                   }
                   className="w-16 h-12 border-2 border-gray-300 rounded-lg cursor-pointer"
                 />
                 <input
                   type="text"
-                  value={selectedSection.props.backgroundColor || "#ffffff"}
+                  value={localProps.backgroundColor || "#ffffff"}
                   onChange={(e) =>
                     handleInputChange("backgroundColor", e.target.value)
                   }
@@ -265,15 +429,15 @@ export const PropertiesPanel = ({
               <div className="flex items-center space-x-4">
                 <input
                   type="color"
-                  value={selectedSection.props.textColor || "#000000"}
+                  value={localProps.textColor || "#000000"}
                   onChange={(e) =>
-                    handleInputChange("textColor", e.target.value)
+                    handleColorChange("textColor", e.target.value, true)
                   }
                   className="w-16 h-12 border-2 border-gray-300 rounded-lg cursor-pointer"
                 />
                 <input
                   type="text"
-                  value={selectedSection.props.textColor || "#000000"}
+                  value={localProps.textColor || "#000000"}
                   onChange={(e) =>
                     handleInputChange("textColor", e.target.value)
                   }

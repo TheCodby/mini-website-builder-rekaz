@@ -9,6 +9,12 @@ interface HeaderProps {
   onToggleRightSidebar?: () => void;
   leftSidebarCollapsed?: boolean;
   rightSidebarCollapsed?: boolean;
+  // Undo/Redo functionality
+  onUndo?: () => void;
+  onRedo?: () => void;
+  canUndo?: boolean;
+  canRedo?: boolean;
+  lastAction?: string;
 }
 
 export const Header = memo<HeaderProps>(
@@ -21,6 +27,11 @@ export const Header = memo<HeaderProps>(
     onToggleRightSidebar,
     leftSidebarCollapsed = false,
     rightSidebarCollapsed = false,
+    onUndo,
+    onRedo,
+    canUndo = false,
+    canRedo = false,
+    lastAction,
   }) => {
     const handleExport = () => {
       console.log("Export functionality coming soon");
@@ -78,8 +89,70 @@ export const Header = memo<HeaderProps>(
           </h1>
         </div>
 
-        {/* Center: Preview Toggle */}
-        <div className="flex items-center">
+        {/* Center: Preview Toggle + Undo/Redo Controls */}
+        <div className="flex items-center space-x-4">
+          {/* Undo/Redo Controls - Only show when not in preview mode */}
+          {!isPreviewMode && (onUndo || onRedo) && (
+            <div className="flex items-center space-x-1 px-3 py-1 bg-gray-50 rounded-lg">
+              <button
+                type="button"
+                onClick={onUndo}
+                disabled={!canUndo}
+                className={`p-2 rounded-md transition-colors ${
+                  canUndo
+                    ? "text-gray-700 hover:text-gray-900 hover:bg-gray-200"
+                    : "text-gray-300 cursor-not-allowed"
+                }`}
+                title={canUndo ? `Undo: ${lastAction}` : "Nothing to undo"}
+                aria-label="Undo last action"
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                  />
+                </svg>
+              </button>
+
+              <div className="w-px h-6 bg-gray-300" />
+
+              <button
+                type="button"
+                onClick={onRedo}
+                disabled={!canRedo}
+                className={`p-2 rounded-md transition-colors ${
+                  canRedo
+                    ? "text-gray-700 hover:text-gray-900 hover:bg-gray-200"
+                    : "text-gray-300 cursor-not-allowed"
+                }`}
+                title={canRedo ? "Redo" : "Nothing to redo"}
+                aria-label="Redo last undone action"
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 10h-10a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6"
+                  />
+                </svg>
+              </button>
+            </div>
+          )}
+
+          {/* Preview Toggle */}
           <button
             type="button"
             onClick={onTogglePreview}
