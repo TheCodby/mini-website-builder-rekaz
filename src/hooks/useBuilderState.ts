@@ -56,12 +56,21 @@ export const useBuilderState = () => {
   );
 
   const handleDeleteSection = useCallback((sectionId: string) => {
-    setBuilderState((prev) => ({
-      ...prev,
-      sections: prev.sections.filter((section) => section.id !== sectionId),
-      selectedSectionId:
-        prev.selectedSectionId === sectionId ? null : prev.selectedSectionId,
-    }));
+    setBuilderState((prev) => {
+      const sectionToDelete = prev.sections.find(
+        (section) => section.id === sectionId
+      );
+      const sectionName = sectionToDelete ? sectionToDelete.type : "section";
+
+      console.log(`Deleted ${sectionName} section successfully`);
+
+      return {
+        ...prev,
+        sections: prev.sections.filter((section) => section.id !== sectionId),
+        selectedSectionId:
+          prev.selectedSectionId === sectionId ? null : prev.selectedSectionId,
+      };
+    });
   }, []);
 
   return {
