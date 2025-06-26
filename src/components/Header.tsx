@@ -17,6 +17,7 @@ interface HeaderProps {
   onToggleRightSidebar?: () => void;
   leftSidebarCollapsed?: boolean;
   rightSidebarCollapsed?: boolean;
+  hasSelectedSection?: boolean; // Track if any section is selected
   // Undo/Redo functionality
   onUndo?: () => void;
   onRedo?: () => void;
@@ -42,6 +43,7 @@ export const Header = memo<HeaderProps>(
     onToggleRightSidebar,
     leftSidebarCollapsed = false,
     rightSidebarCollapsed = false,
+    hasSelectedSection = false,
     onUndo,
     onRedo,
     canUndo = false,
@@ -114,14 +116,14 @@ export const Header = memo<HeaderProps>(
 
     return (
       <motion.header
-        className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 z-30"
+        className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 z-30"
         initial="hidden"
         animate="visible"
         variants={staggerContainer}
       >
         {/* Left: Brand + Tablet Controls */}
         <motion.div
-          className="flex items-center space-x-4"
+          className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0"
           variants={staggerItem}
         >
           {/* Tablet sidebar toggles */}
@@ -157,8 +159,8 @@ export const Header = memo<HeaderProps>(
 
           <h1
             className={`font-bold text-gray-900 ${
-              isMobile ? "text-lg" : "text-xl"
-            }`}
+              isMobile ? "text-base" : "text-xl"
+            } truncate`}
           >
             {isMobile
               ? "Builder"
@@ -170,17 +172,23 @@ export const Header = memo<HeaderProps>(
 
         {/* Center: Preview Toggle + Undo/Redo Controls */}
         <motion.div
-          className="flex items-center space-x-4"
+          className={`flex items-center ${
+            isMobile ? "space-x-2" : "space-x-4"
+          } flex-shrink-0`}
           variants={staggerItem}
         >
-          {/* Undo/Redo Controls - Only show when not in preview mode */}
+          {/* Undo/Redo Controls - Hide on mobile or show minimal version */}
           {!isPreviewMode && (onUndo || onRedo) && (
-            <div className="flex items-center space-x-1 px-3 py-1 bg-gray-50 rounded-lg">
+            <div
+              className={`flex items-center space-x-1 px-2 py-1 bg-gray-50 rounded-lg ${
+                isMobile ? "hidden sm:flex" : "flex"
+              }`}
+            >
               <button
                 type="button"
                 onClick={onUndo}
                 disabled={!canUndo}
-                className={`p-2 rounded-md transition-colors ${
+                className={`p-1.5 sm:p-2 rounded-md transition-colors ${
                   canUndo
                     ? "text-gray-700 hover:text-gray-900 hover:bg-gray-200"
                     : "text-gray-300 cursor-not-allowed"
@@ -189,7 +197,7 @@ export const Header = memo<HeaderProps>(
                 aria-label="Undo last action"
               >
                 <svg
-                  className="w-4 h-4"
+                  className="w-3.5 h-3.5 sm:w-4 sm:h-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -203,13 +211,13 @@ export const Header = memo<HeaderProps>(
                 </svg>
               </button>
 
-              <div className="w-px h-6 bg-gray-300" />
+              <div className="w-px h-4 sm:h-6 bg-gray-300" />
 
               <button
                 type="button"
                 onClick={onRedo}
                 disabled={!canRedo}
-                className={`p-2 rounded-md transition-colors ${
+                className={`p-1.5 sm:p-2 rounded-md transition-colors ${
                   canRedo
                     ? "text-gray-700 hover:text-gray-900 hover:bg-gray-200"
                     : "text-gray-300 cursor-not-allowed"
@@ -218,7 +226,7 @@ export const Header = memo<HeaderProps>(
                 aria-label="Redo last undone action"
               >
                 <svg
-                  className="w-4 h-4"
+                  className="w-3.5 h-3.5 sm:w-4 sm:h-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -238,7 +246,7 @@ export const Header = memo<HeaderProps>(
           <button
             type="button"
             onClick={onTogglePreview}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+            className={`flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
               isPreviewMode
                 ? "bg-green-100 text-green-700 hover:bg-green-200"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -248,7 +256,7 @@ export const Header = memo<HeaderProps>(
             {isPreviewMode ? (
               <>
                 <svg
-                  className="w-4 h-4"
+                  className="w-4 h-4 flex-shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -260,12 +268,14 @@ export const Header = memo<HeaderProps>(
                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                   />
                 </svg>
-                <span>{isMobile ? "Edit" : "Edit Mode"}</span>
+                <span className="text-sm sm:text-base">
+                  {isMobile ? "Edit" : "Edit Mode"}
+                </span>
               </>
             ) : (
               <>
                 <svg
-                  className="w-4 h-4"
+                  className="w-4 h-4 flex-shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -283,7 +293,7 @@ export const Header = memo<HeaderProps>(
                     d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                   />
                 </svg>
-                <span>{isMobile ? "Preview" : "Preview"}</span>
+                <span className="text-sm sm:text-base">Preview</span>
               </>
             )}
           </button>
@@ -291,17 +301,25 @@ export const Header = memo<HeaderProps>(
 
         {/* Right: Actions + Tablet Controls */}
         <motion.div
-          className="flex items-center space-x-3"
+          className={`flex items-center ${
+            isMobile ? "space-x-1" : "space-x-3"
+          } flex-shrink-0`}
           variants={staggerItem}
         >
+          {/* Import/Export buttons - More compact on mobile */}
           <motion.button
             type="button"
             onClick={handleImport}
-            className="px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors font-medium"
+            className={`${
+              isMobile
+                ? "p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
+                : "px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg font-medium"
+            } transition-colors`}
             variants={buttonVariants}
             initial="rest"
             whileHover="hover"
             whileTap="tap"
+            title={isMobile ? "Import" : undefined}
           >
             {isMobile ? (
               <svg
@@ -321,14 +339,20 @@ export const Header = memo<HeaderProps>(
               "Import"
             )}
           </motion.button>
+
           <motion.button
             type="button"
             onClick={handleExport}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className={`${
+              isMobile
+                ? "p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                : "px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+            } transition-colors`}
             variants={buttonVariants}
             initial="rest"
             whileHover="hover"
             whileTap="tap"
+            title={isMobile ? "Export" : undefined}
           >
             {isMobile ? (
               <svg
@@ -349,8 +373,8 @@ export const Header = memo<HeaderProps>(
             )}
           </motion.button>
 
-          {/* Tablet right sidebar toggle */}
-          {isTablet && (
+          {/* Tablet right sidebar toggle - Only show when section is selected */}
+          {isTablet && hasSelectedSection && !isPreviewMode && (
             <button
               onClick={onToggleRightSidebar}
               className={`p-2 rounded-lg transition-colors ${

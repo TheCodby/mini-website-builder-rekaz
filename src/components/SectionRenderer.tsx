@@ -23,7 +23,12 @@ export const SectionRenderer = memo<SectionRendererProps>(
     onClick,
     onSelectSection,
   }) => {
-    const handleSectionClick = () => {
+    const handleSectionClick = (e?: React.MouseEvent) => {
+      // Prevent event from bubbling up to BuilderArea background click handler
+      if (e) {
+        e.stopPropagation();
+      }
+
       if (!isPreviewMode) {
         // Use onClick if provided, otherwise use onSelectSection for backward compatibility
         if (onClick) {
@@ -67,7 +72,10 @@ export const SectionRenderer = memo<SectionRendererProps>(
                 ? "ring-2 ring-red-500 ring-offset-2"
                 : ""
             }`}
-            onClick={handleSectionClick}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSectionClick();
+            }}
             role={isPreviewMode ? "region" : "button"}
             tabIndex={isPreviewMode ? -1 : 0}
             aria-label={

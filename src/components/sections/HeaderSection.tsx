@@ -5,7 +5,7 @@ interface HeaderSectionProps extends SectionProps {
   sectionId?: string;
   isSelected?: boolean;
   isPreviewMode?: boolean;
-  onClick?: () => void;
+  onClick?: (e?: React.MouseEvent) => void;
 }
 
 export const HeaderSection = memo<HeaderSectionProps>(
@@ -20,9 +20,12 @@ export const HeaderSection = memo<HeaderSectionProps>(
   }) => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-    const handleClick = () => {
+    const handleClick = (e?: React.MouseEvent) => {
+      if (e) {
+        e.stopPropagation();
+      }
       if (!isPreviewMode && onClick) {
-        onClick();
+        onClick(e);
       }
     };
 
@@ -44,7 +47,7 @@ export const HeaderSection = memo<HeaderSectionProps>(
     return (
       <header
         data-section-id={sectionId}
-        className={`relative w-full px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-b transition-all duration-200 ${
+        className={`relative w-full overflow-hidden px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-b transition-all duration-200 ${
           !isPreviewMode ? "cursor-pointer" : ""
         } ${
           isSelected && !isPreviewMode
@@ -71,21 +74,23 @@ export const HeaderSection = memo<HeaderSectionProps>(
         }}
       >
         <div
-          className="flex items-center justify-between max-w-7xl mx-auto"
+          className="flex items-center justify-between w-full max-w-full mx-auto min-w-0"
           style={{ color: textColor || "#1f2937" }}
         >
-          <div className="flex items-center flex-shrink-0">
-            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold truncate max-w-[200px] sm:max-w-none">
+          {/* Brand/Logo Section */}
+          <div className="flex items-center flex-shrink-0 min-w-0 mr-4">
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold truncate min-w-0 max-w-[120px] sm:max-w-[200px] md:max-w-[300px]">
               {title}
             </h1>
           </div>
 
-          <nav className="hidden md:flex items-center space-x-6 lg:space-x-8">
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-4 lg:space-x-6 flex-shrink-0">
             {navLinks.map((link, index) => (
               <a
                 key={index}
                 href={link.href}
-                className="text-sm lg:text-base hover:opacity-75 transition-opacity py-2 px-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded"
+                className="text-sm lg:text-base hover:opacity-75 transition-opacity py-2 px-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded whitespace-nowrap"
                 onClick={(e) => e.preventDefault()}
                 aria-label={`${link.name} navigation link`}
                 style={{ color: textColor || "#1f2937" }}
@@ -95,7 +100,8 @@ export const HeaderSection = memo<HeaderSectionProps>(
             ))}
           </nav>
 
-          <div className="md:hidden">
+          {/* Mobile Menu Button */}
+          <div className="md:hidden flex-shrink-0">
             <button
               type="button"
               onClick={handleMobileMenuToggle}
@@ -131,20 +137,21 @@ export const HeaderSection = memo<HeaderSectionProps>(
           </div>
         </div>
 
+        {/* Mobile Navigation Dropdown */}
         {mobileMenuOpen && (
           <div
-            className="md:hidden absolute top-full left-0 right-0 z-50 border-t shadow-lg"
+            className="md:hidden absolute top-full left-0 right-0 z-50 border-t shadow-lg max-w-full overflow-hidden"
             style={{
               backgroundColor: backgroundColor || "#ffffff",
               borderTopColor: borderColor,
             }}
           >
-            <nav className="px-4 py-3 space-y-1">
+            <nav className="px-4 py-3 space-y-1 max-w-full">
               {navLinks.map((link, index) => (
                 <a
                   key={index}
                   href={link.href}
-                  className="block px-3 py-3 text-base hover:bg-gray-100 hover:bg-opacity-20 rounded-lg transition-colors touch-target"
+                  className="block px-3 py-3 text-base hover:bg-gray-100 hover:bg-opacity-20 rounded-lg transition-colors touch-target truncate"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -159,8 +166,9 @@ export const HeaderSection = memo<HeaderSectionProps>(
           </div>
         )}
 
+        {/* Edit Mode Label */}
         {!isPreviewMode && (
-          <div className="absolute top-1 sm:top-2 right-1 sm:right-2 bg-black bg-opacity-75 text-white px-2 py-1 sm:px-3 sm:py-1 rounded text-xs sm:text-sm font-medium backdrop-blur-sm">
+          <div className="absolute top-1 sm:top-2 right-1 sm:right-2 bg-black bg-opacity-75 text-white px-2 py-1 sm:px-3 sm:py-1 rounded text-xs sm:text-sm font-medium backdrop-blur-sm z-10">
             Header Section
           </div>
         )}

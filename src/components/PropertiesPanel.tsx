@@ -289,30 +289,59 @@ export const PropertiesPanel = ({
     >
       {/* Header - only show when not in mobile overlay */}
       {!isMobile && (
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900">
+        <div
+          className={`${
+            isTablet && collapsed ? "p-3" : "p-6"
+          } border-b border-gray-200 flex-shrink-0`}
+        >
+          {isTablet && collapsed ? (
+            <div className="flex flex-col items-center">
+              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mb-2">
+                <svg
+                  className="w-4 h-4 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"
+                  />
+                </svg>
+              </div>
+              <span className="text-xs text-gray-500 text-center">
                 Properties
-              </h2>
-              <p className="text-sm text-gray-500 mt-1 capitalize">
-                {selectedSection.type} Section
-              </p>
+              </span>
             </div>
-            <div className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium capitalize">
-              {selectedSection.type}
+          ) : (
+            <div className="flex items-center justify-between min-w-0">
+              <div className="min-w-0 flex-1">
+                <h2 className="text-xl font-semibold text-gray-900 truncate">
+                  Properties
+                </h2>
+                <p className="text-sm text-gray-500 mt-1 capitalize truncate">
+                  {selectedSection.type} Section
+                </p>
+              </div>
+              <div className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium capitalize flex-shrink-0">
+                {selectedSection.type}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
       {/* Form Content */}
       <div
-        className={`${isMobile ? "" : "flex-1 overflow-y-auto"} p-6 space-y-8`}
+        className={`${isMobile ? "" : "flex-1 overflow-y-auto"} ${
+          isTablet && collapsed ? "p-2" : "p-6"
+        } space-y-8 min-w-0`}
       >
         {/* Content Section */}
-        <div className="space-y-6">
-          <h3 className="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2">
+        <div className="space-y-6 min-w-0">
+          <h3 className="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2 truncate">
             Content
           </h3>
 
@@ -364,9 +393,13 @@ export const PropertiesPanel = ({
           )}
 
           {selectedSection.props.buttonText !== undefined && (
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
+            <div
+              className={`${
+                isTablet && collapsed ? "space-y-4" : "grid grid-cols-2 gap-4"
+              } min-w-0`}
+            >
+              <div className="min-w-0">
+                <label className="block text-sm font-medium text-gray-700 mb-3 truncate">
                   Button Text
                 </label>
                 <input
@@ -375,14 +408,14 @@ export const PropertiesPanel = ({
                   onChange={(e) =>
                     handleInputChange("buttonText", e.target.value)
                   }
-                  className="w-full px-4 py-3 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 transition-colors"
+                  className="w-full px-4 py-3 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 transition-colors min-w-0"
                   placeholder="Button text..."
                 />
               </div>
 
               {selectedSection.props.buttonUrl !== undefined && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                <div className="min-w-0">
+                  <label className="block text-sm font-medium text-gray-700 mb-3 truncate">
                     Button URL
                   </label>
                   <input
@@ -391,7 +424,7 @@ export const PropertiesPanel = ({
                     onChange={(e) =>
                       handleInputChange("buttonUrl", e.target.value)
                     }
-                    className="w-full px-4 py-3 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 transition-colors"
+                    className="w-full px-4 py-3 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 transition-colors min-w-0"
                     placeholder="https://..."
                   />
                 </div>
@@ -401,8 +434,8 @@ export const PropertiesPanel = ({
         </div>
 
         {/* Styling Section */}
-        <div className="space-y-6">
-          <h3 className="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2">
+        <div className="space-y-6 min-w-0">
+          <h3 className="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2 truncate">
             Styling
           </h3>
 

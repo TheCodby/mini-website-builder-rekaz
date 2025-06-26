@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   DndContext,
   DragEndEvent,
@@ -30,11 +31,17 @@ export const WebsiteBuilder = () => {
   const [showLibrary, setShowLibrary] = useState(false);
   const [showProperties, setShowProperties] = useState(false);
   const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(false);
-  const [rightSidebarCollapsed, setRightSidebarCollapsed] = useState(false);
 
   // Drag and drop state
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
+
+  // Hide properties panel when entering preview mode or no section selected
+  useEffect(() => {
+    if (builderState.isPreviewMode || !builderState.selectedSectionId) {
+      setShowProperties(false);
+    }
+  }, [builderState.isPreviewMode, builderState.selectedSectionId]);
 
   // Configure drag sensors with optimized touch support
   const sensors = useSensors(
@@ -103,8 +110,22 @@ export const WebsiteBuilder = () => {
 
   const handleSelectSection = (sectionId: string | null) => {
     actions.handleSelectSection(sectionId);
-    if (isMobile && sectionId) {
-      setShowProperties(true);
+
+    if (isMobile) {
+      if (sectionId) {
+        setShowProperties(true);
+      } else {
+        setShowProperties(false);
+      }
+    }
+
+    // On tablet, show properties as overlay when selecting a section
+    if (isTablet) {
+      if (sectionId) {
+        setShowProperties(true); // Show as overlay instead
+      } else {
+        setShowProperties(false); // Hide when nothing is selected
+      }
     }
   };
 
@@ -423,11 +444,7 @@ export const WebsiteBuilder = () => {
               onToggleLeftSidebar={() =>
                 setLeftSidebarCollapsed(!leftSidebarCollapsed)
               }
-              onToggleRightSidebar={() =>
-                setRightSidebarCollapsed(!rightSidebarCollapsed)
-              }
               leftSidebarCollapsed={leftSidebarCollapsed}
-              rightSidebarCollapsed={rightSidebarCollapsed}
               onUndo={actions.handleUndo}
               onRedo={actions.handleRedo}
               canUndo={historyInfo.canUndo}
@@ -440,15 +457,17 @@ export const WebsiteBuilder = () => {
             <div className="flex-1 flex overflow-hidden">
               {/* Left: Collapsible Section Library */}
               <aside
-                className={`bg-white border-r border-gray-200 flex flex-col transition-all duration-300 ${
-                  leftSidebarCollapsed ? "w-16" : "w-72"
+                className={`bg-white border-r border-gray-200 flex flex-col transition-all duration-300 overflow-hidden ${
+                  leftSidebarCollapsed ? "w-16" : "w-72 min-w-0"
                 }`}
               >
-                <SectionLibrary
-                  onAddSection={actions.handleAddSection}
-                  isTablet={true}
-                  collapsed={leftSidebarCollapsed}
-                />
+                <div className="flex-1 overflow-hidden">
+                  <SectionLibrary
+                    onAddSection={actions.handleAddSection}
+                    isTablet={true}
+                    collapsed={leftSidebarCollapsed}
+                  />
+                </div>
               </aside>
 
               {/* Center: Builder Area (gets maximum space) */}
@@ -461,24 +480,153 @@ export const WebsiteBuilder = () => {
                   activeId={activeId}
                   overId={overId}
                   isDragging={isDragging}
+                  isMobile={false} // Pass tablet as desktop-like for drag behavior
                 />
+                {/* Floating edit button for selected sections on tablet */}
+                <AnimatePresence>
+                  {!builderState.isPreviewMode &&
+                    selectedSection &&
+                    !showProperties && (
+                      <motion.button
+                        onClick={() => setShowProperties(true)}
+                        className="fixed bottom-6 right-6 w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-colors z-40 flex items-center justify-center"
+                        aria-label="Edit selected section"
+                        initial={{ scale: 0, opacity: 0, y: 20 }}
+                        animate={{
+                          scale: [1, 1.05, 1],
+                          opacity: 1,
+                          y: 0,
+                        }}
+                        exit={{ scale: 0, opacity: 0, y: 20 }}
+                        whileHover={{ scale: 1.1, y: -2 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 20,
+                          scale: {
+                            repeat: Infinity,
+                            repeatType: "reverse",
+                            duration: 2,
+                            ease: "easeInOut",
+                          },
+                        }}
+                      >
+                        <motion.svg
+                          className="w-6 h-6"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          initial={{ rotate: 0 }}
+                          animate={{ rotate: 360 }}
+                          transition={{
+                            duration: 0.5,
+                            delay: 0.2,
+                            type: "spring",
+                            stiffness: 200,
+                          }}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                          />
+                        </motion.svg>
+                      </motion.button>
+                    )}
+                </AnimatePresence>
               </main>
-
-              {/* Right: Collapsible Properties Panel */}
-              <aside
-                className={`bg-white border-l border-gray-200 flex flex-col transition-all duration-300 ${
-                  rightSidebarCollapsed ? "w-16" : "w-72"
-                }`}
-              >
-                <PropertiesPanel
-                  selectedSection={selectedSection}
-                  onUpdateSection={actions.handleUpdateSection}
-                  onDeleteSection={actions.handleDeleteSection}
-                  isTablet={true}
-                  collapsed={rightSidebarCollapsed}
-                />
-              </aside>
             </div>
+
+            {/* Tablet Properties Panel Overlay (when component is selected) */}
+            <AnimatePresence>
+              {showProperties &&
+                selectedSection &&
+                !builderState.isPreviewMode && (
+                  <motion.div
+                    className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end md:items-center md:justify-end"
+                    onClick={() => setShowProperties(false)}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <motion.div
+                      className="w-full md:w-96 md:h-full bg-white md:rounded-l-xl max-h-[85vh] md:max-h-full flex flex-col overflow-hidden md:shadow-2xl"
+                      onClick={(e) => e.stopPropagation()}
+                      initial={{
+                        x: "100%",
+                        y: isTablet ? 0 : "100%",
+                      }}
+                      animate={{
+                        x: 0,
+                        y: 0,
+                      }}
+                      exit={{
+                        x: "100%",
+                        y: isTablet ? 0 : "100%",
+                      }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 30,
+                        duration: 0.3,
+                      }}
+                    >
+                      <motion.div
+                        className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1, duration: 0.2 }}
+                      >
+                        <h2 className="text-lg font-semibold">Edit Section</h2>
+                        <motion.button
+                          onClick={() => setShowProperties(false)}
+                          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                          whileHover={{ scale: 1.05, rotate: 90 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        </motion.button>
+                      </motion.div>
+                      <motion.div
+                        className="flex-1 overflow-y-auto"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          delay: 0.15,
+                          duration: 0.3,
+                          type: "spring",
+                          stiffness: 200,
+                        }}
+                      >
+                        <PropertiesPanel
+                          selectedSection={selectedSection}
+                          onUpdateSection={actions.handleUpdateSection}
+                          onDeleteSection={(sectionId) => {
+                            actions.handleDeleteSection(sectionId);
+                            setShowProperties(false); // Close overlay after deletion
+                          }}
+                          isMobile={true} // Use mobile layout for the overlay
+                        />
+                      </motion.div>
+                    </motion.div>
+                  </motion.div>
+                )}
+            </AnimatePresence>
           </div>
 
           {/* Drag Overlay */}

@@ -5,7 +5,7 @@ interface HeroSectionProps extends SectionProps {
   sectionId?: string;
   isSelected?: boolean;
   isPreviewMode?: boolean;
-  onClick?: () => void;
+  onClick?: (e?: React.MouseEvent) => void;
 }
 
 export const HeroSection = memo<HeroSectionProps>(
@@ -21,9 +21,12 @@ export const HeroSection = memo<HeroSectionProps>(
     isPreviewMode = false,
     onClick,
   }) => {
-    const handleClick = () => {
+    const handleClick = (e?: React.MouseEvent) => {
+      if (e) {
+        e.stopPropagation();
+      }
       if (!isPreviewMode && onClick) {
-        onClick();
+        onClick(e);
       }
     };
 
