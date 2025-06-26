@@ -59,7 +59,7 @@ export const PropertiesPanel = ({
       ) as HTMLElement;
       colorDragStateRef.current.sectionElement = sectionElement;
     }
-  }, [selectedSection?.id]);
+  }, [selectedSection]);
 
   /**
    * Debounced update function that batches rapid changes
