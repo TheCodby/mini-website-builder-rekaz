@@ -505,7 +505,8 @@ export const WebsiteBuilder = () => {
                   activeId={activeId}
                   overId={overId}
                   isDragging={isDragging}
-                  isMobile={false} // Pass tablet as desktop-like for drag behavior
+                  isMobile={false} // Don't use mobile behavior for tablets
+                  isTablet={true} // Enable tablet-optimized drag behavior
                 />
                 {/* Floating edit button for selected sections on tablet */}
                 <AnimatePresence>

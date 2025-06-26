@@ -7,10 +7,11 @@ interface DropZoneProps {
   isActive: boolean;
   isOver: boolean;
   isMobile?: boolean;
+  isTablet?: boolean;
 }
 
 export const DropZone = memo<DropZoneProps>(
-  ({ id, index, isActive, isOver, isMobile = false }) => {
+  ({ id, index, isActive, isOver, isMobile = false, isTablet = false }) => {
     const { setNodeRef } = useDroppable({
       id,
       data: {
@@ -29,6 +30,8 @@ export const DropZone = memo<DropZoneProps>(
             ? "h-32 opacity-100"
             : isMobile
             ? "h-20 opacity-90"
+            : isTablet
+            ? "h-16 opacity-80"
             : "h-12 opacity-60"
         }`}
       >
@@ -37,15 +40,17 @@ export const DropZone = memo<DropZoneProps>(
             isOver
               ? "border-primary-400 bg-primary-50 drop-zone-active shadow-md"
               : "border-gray-300 bg-gray-50"
-          } ${isMobile ? "touch-target" : ""}`}
+          } ${isMobile || isTablet ? "touch-target" : ""}`}
         >
           <div
             className={`flex items-center space-x-2 font-medium transition-colors duration-200 ${
               isOver ? "text-primary-600" : "text-gray-500"
-            } ${isMobile ? "text-base" : "text-sm"}`}
+            } ${isMobile ? "text-base" : isTablet ? "text-sm" : "text-sm"}`}
           >
             <svg
-              className={`${isMobile ? "w-6 h-6" : "w-4 h-4"}`}
+              className={`${
+                isMobile ? "w-6 h-6" : isTablet ? "w-5 h-5" : "w-4 h-4"
+              }`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -61,8 +66,12 @@ export const DropZone = memo<DropZoneProps>(
               {isOver
                 ? isMobile
                   ? "🎯 Release to drop here"
+                  : isTablet
+                  ? "🎯 Release to drop here"
                   : "Drop section here"
-                : `${isMobile ? "📍 " : ""}Position ${index + 1}`}
+                : `${isMobile ? "📍 " : isTablet ? "📍 " : ""}Position ${
+                    index + 1
+                  }`}
             </span>
           </div>
         </div>

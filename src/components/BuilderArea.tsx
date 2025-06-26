@@ -18,6 +18,7 @@ interface BuilderAreaProps {
   overId?: string | null;
   isDragging?: boolean;
   isMobile?: boolean;
+  isTablet?: boolean;
 }
 
 export const BuilderArea = memo<BuilderAreaProps>(
@@ -30,6 +31,7 @@ export const BuilderArea = memo<BuilderAreaProps>(
     overId = null,
     isDragging = false,
     isMobile = false,
+    isTablet = false,
   }) => {
     const sortedSections = [...sections].sort((a, b) => a.order - b.order);
     const sectionIds = sortedSections.map((section) => section.id);
@@ -139,6 +141,7 @@ export const BuilderArea = memo<BuilderAreaProps>(
                   isActive={isDragging}
                   isOver={overId === "drop-zone-0"}
                   isMobile={isMobile}
+                  isTablet={isTablet}
                 />
               )}
             </div>
@@ -161,6 +164,7 @@ export const BuilderArea = memo<BuilderAreaProps>(
                     isActive={isDragging}
                     isOver={overId === "drop-zone-0"}
                     isMobile={isMobile}
+                    isTablet={isTablet}
                   />
                 )}
 
@@ -179,6 +183,7 @@ export const BuilderArea = memo<BuilderAreaProps>(
                         isSelected={selectedSectionId === section.id}
                         isPreviewMode={isPreviewMode}
                         isMobile={isMobile}
+                        isTablet={isTablet}
                         index={index}
                       >
                         <SectionRenderer
@@ -198,6 +203,7 @@ export const BuilderArea = memo<BuilderAreaProps>(
                         isActive={isDragging}
                         isOver={overId === `drop-zone-${index + 1}`}
                         isMobile={isMobile}
+                        isTablet={isTablet}
                       />
                     )}
                   </div>
