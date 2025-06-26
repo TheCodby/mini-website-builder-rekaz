@@ -1,6 +1,12 @@
 import { memo } from "react";
+import { motion } from "framer-motion";
 
 import type { ExportMetadata, ImportOptions } from "@/types/builder";
+import {
+  buttonVariants,
+  staggerContainer,
+  staggerItem,
+} from "@/utils/animations";
 
 interface HeaderProps {
   isPreviewMode: boolean;
@@ -107,9 +113,17 @@ export const Header = memo<HeaderProps>(
     };
 
     return (
-      <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 z-30">
+      <motion.header
+        className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 z-30"
+        initial="hidden"
+        animate="visible"
+        variants={staggerContainer}
+      >
         {/* Left: Brand + Tablet Controls */}
-        <div className="flex items-center space-x-4">
+        <motion.div
+          className="flex items-center space-x-4"
+          variants={staggerItem}
+        >
           {/* Tablet sidebar toggles */}
           {isTablet && (
             <div className="flex items-center space-x-2">
@@ -152,10 +166,13 @@ export const Header = memo<HeaderProps>(
               ? "Website Builder"
               : "Mini Website Builder"}
           </h1>
-        </div>
+        </motion.div>
 
         {/* Center: Preview Toggle + Undo/Redo Controls */}
-        <div className="flex items-center space-x-4">
+        <motion.div
+          className="flex items-center space-x-4"
+          variants={staggerItem}
+        >
           {/* Undo/Redo Controls - Only show when not in preview mode */}
           {!isPreviewMode && (onUndo || onRedo) && (
             <div className="flex items-center space-x-1 px-3 py-1 bg-gray-50 rounded-lg">
@@ -270,14 +287,21 @@ export const Header = memo<HeaderProps>(
               </>
             )}
           </button>
-        </div>
+        </motion.div>
 
         {/* Right: Actions + Tablet Controls */}
-        <div className="flex items-center space-x-3">
-          <button
+        <motion.div
+          className="flex items-center space-x-3"
+          variants={staggerItem}
+        >
+          <motion.button
             type="button"
             onClick={handleImport}
             className="px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors font-medium"
+            variants={buttonVariants}
+            initial="rest"
+            whileHover="hover"
+            whileTap="tap"
           >
             {isMobile ? (
               <svg
@@ -296,11 +320,15 @@ export const Header = memo<HeaderProps>(
             ) : (
               "Import"
             )}
-          </button>
-          <button
+          </motion.button>
+          <motion.button
             type="button"
             onClick={handleExport}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            variants={buttonVariants}
+            initial="rest"
+            whileHover="hover"
+            whileTap="tap"
           >
             {isMobile ? (
               <svg
@@ -319,7 +347,7 @@ export const Header = memo<HeaderProps>(
             ) : (
               "Export"
             )}
-          </button>
+          </motion.button>
 
           {/* Tablet right sidebar toggle */}
           {isTablet && (
@@ -351,8 +379,8 @@ export const Header = memo<HeaderProps>(
               </svg>
             </button>
           )}
-        </div>
-      </header>
+        </motion.div>
+      </motion.header>
     );
   }
 );

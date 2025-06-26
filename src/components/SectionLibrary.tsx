@@ -1,5 +1,11 @@
+import { motion } from "framer-motion";
 import type { SectionTemplate } from "@/types/builder";
 import { DraggableTemplate } from "./DraggableTemplate";
+import {
+  staggerContainer,
+  staggerItem,
+  animationPresets,
+} from "@/utils/animations";
 
 interface SectionLibraryProps {
   onAddSection: (template: SectionTemplate) => void;
@@ -73,7 +79,10 @@ export const SectionLibrary = ({
   collapsed = false,
 }: SectionLibraryProps) => {
   return (
-    <div className={`${isMobile ? "" : "h-full flex flex-col"} bg-white`}>
+    <motion.div
+      className={`${isMobile ? "" : "h-full flex flex-col"} bg-white`}
+      {...animationPresets.fadeIn}
+    >
       {/* Header - show for desktop and collapsed tablet */}
       {!isMobile && (
         <div
@@ -121,54 +130,60 @@ export const SectionLibrary = ({
           isTablet && collapsed ? "p-2" : "p-6"
         }`}
       >
-        <div className="grid gap-4">
+        <motion.div
+          className="grid gap-4"
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+        >
           {sectionTemplates.map((template) => (
-            <DraggableTemplate
-              key={template.id}
-              template={template}
-              isMobile={isMobile}
-              onAddSection={onAddSection}
-            >
-              <div className="flex items-start space-x-4">
-                {/* Icon */}
-                <div className="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl group-hover:bg-blue-100 transition-colors duration-200">
-                  {template.preview}
-                </div>
+            <motion.div key={template.id} variants={staggerItem}>
+              <DraggableTemplate
+                template={template}
+                isMobile={isMobile}
+                onAddSection={onAddSection}
+              >
+                <div className="flex items-start space-x-4">
+                  {/* Icon */}
+                  <div className="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl group-hover:bg-blue-100 transition-colors duration-200">
+                    {template.preview}
+                  </div>
 
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-200 mb-1">
-                    {template.name}
-                  </h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">
-                    {template.description}
-                  </p>
-                </div>
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-200 mb-1">
+                      {template.name}
+                    </h3>
+                    <p className="text-sm text-gray-500 leading-relaxed">
+                      {template.description}
+                    </p>
+                  </div>
 
-                {/* Add/Drag icon */}
-                <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <svg
-                    className="w-5 h-5 text-blue-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d={
-                        isMobile
-                          ? "M12 6v6m0 0v6m0-6h6m-6 0H6"
-                          : "M4 8h16M4 16h16"
-                      }
-                    />
-                  </svg>
+                  {/* Add/Drag icon */}
+                  <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <svg
+                      className="w-5 h-5 text-blue-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d={
+                          isMobile
+                            ? "M12 6v6m0 0v6m0-6h6m-6 0H6"
+                            : "M4 8h16M4 16h16"
+                        }
+                      />
+                    </svg>
+                  </div>
                 </div>
-              </div>
-            </DraggableTemplate>
+              </DraggableTemplate>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
 
       {/* Footer - only show when not in mobile overlay */}
@@ -180,6 +195,6 @@ export const SectionLibrary = ({
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };

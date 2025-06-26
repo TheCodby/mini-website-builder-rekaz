@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import type { Section, SectionProps } from "@/types/builder";
+import {
+  modalVariants,
+  overlayVariants,
+  animationPresets,
+} from "@/utils/animations";
 
 interface PropertiesPanelProps {
   selectedSection: Section | undefined;
@@ -211,7 +217,10 @@ export const PropertiesPanel = ({
 
   if (!selectedSection) {
     return (
-      <div className="h-full flex flex-col bg-white">
+      <motion.div
+        className="h-full flex flex-col bg-white"
+        {...animationPresets.fadeIn}
+      >
         <div
           className={`${
             isTablet && collapsed ? "p-3" : "p-6"
@@ -269,12 +278,15 @@ export const PropertiesPanel = ({
             </p>
           </div>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className={`${isMobile ? "" : "h-full flex flex-col"} bg-white`}>
+    <motion.div
+      className={`${isMobile ? "" : "h-full flex flex-col"} bg-white`}
+      {...animationPresets.slideUp}
+    >
       {/* Header - only show when not in mobile overlay */}
       {!isMobile && (
         <div className="p-6 border-b border-gray-200">
@@ -481,63 +493,73 @@ export const PropertiesPanel = ({
           </div>
 
           {/* Delete Confirmation Modal */}
-          {showDeleteModal && (
-            <div
-              className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-              onClick={handleCancelDelete}
-            >
-              <div
-                className="bg-white rounded-xl p-6 max-w-md w-full shadow-xl"
-                onClick={(e) => e.stopPropagation()}
+          <AnimatePresence>
+            {showDeleteModal && (
+              <motion.div
+                className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+                onClick={handleCancelDelete}
+                variants={overlayVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
               >
-                <div className="flex items-center mb-4">
-                  <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
-                    <svg
-                      className="w-5 h-5 text-red-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"
-                      />
-                    </svg>
+                <motion.div
+                  className="bg-white rounded-xl p-6 max-w-md w-full shadow-xl"
+                  onClick={(e) => e.stopPropagation()}
+                  variants={modalVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <div className="flex items-center mb-4">
+                    <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                      <svg
+                        className="w-5 h-5 text-red-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Delete Section
+                    </h3>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Delete Section
-                  </h3>
-                </div>
 
-                <p className="text-gray-600 mb-6">
-                  Are you sure you want to delete this{" "}
-                  <strong className="capitalize">
-                    {selectedSection?.type}
-                  </strong>{" "}
-                  section? This action cannot be undone.
-                </p>
+                  <p className="text-gray-600 mb-6">
+                    Are you sure you want to delete this{" "}
+                    <strong className="capitalize">
+                      {selectedSection?.type}
+                    </strong>{" "}
+                    section? This action cannot be undone.
+                  </p>
 
-                <div className="flex space-x-3">
-                  <button
-                    onClick={handleCancelDelete}
-                    className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleConfirmDelete}
-                    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={handleCancelDelete}
+                      className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleConfirmDelete}
+                      className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </>
       )}
-    </div>
+    </motion.div>
   );
 };
