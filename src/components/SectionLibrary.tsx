@@ -6,6 +6,7 @@ import {
   staggerItem,
   animationPresets,
 } from "@/utils/animations";
+import Image from "next/image";
 
 interface SectionLibraryProps {
   onAddSection: (template: SectionTemplate) => void;
@@ -21,7 +22,7 @@ const sectionTemplates: SectionTemplate[] = [
     type: "hero",
     description:
       "Eye-catching hero section with title, subtitle, and call-to-action button",
-    preview: "🎯",
+    preview: "/hero.png",
     defaultProps: {
       title: "Welcome to Our Website",
       subtitle: "Create amazing experiences with our platform",
@@ -36,7 +37,7 @@ const sectionTemplates: SectionTemplate[] = [
     name: "Navigation Header",
     type: "header",
     description: "Clean navigation header with logo and menu items",
-    preview: "📄",
+    preview: "/header.png",
     defaultProps: {
       title: "Your Brand",
       backgroundColor: "#ffffff",
@@ -54,7 +55,7 @@ const sectionTemplates: SectionTemplate[] = [
     name: "Content Block",
     type: "content",
     description: "Simple content section with title and description",
-    preview: "📝",
+    preview: "/content.png",
     defaultProps: {
       title: "About Us",
       description:
@@ -68,7 +69,7 @@ const sectionTemplates: SectionTemplate[] = [
     name: "Footer",
     type: "footer",
     description: "Clean footer with copyright and links",
-    preview: "🔗",
+    preview: "/footer.png",
     defaultProps: {
       title: "Your Company",
       footerDescription:
@@ -170,9 +171,33 @@ export const SectionLibrary = ({
                 onAddSection={onAddSection}
               >
                 <div className="flex items-start space-x-4">
-                  {/* Icon */}
-                  <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center text-xl group-hover:bg-primary-100 transition-colors duration-200">
-                    {template.preview}
+                  {/* Preview Image */}
+                  <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden group-hover:bg-primary-100 transition-colors duration-200 border border-gray-200 group-hover:border-primary-300 relative">
+                    <Image
+                      fill
+                      src={template.preview}
+                      alt={`${template.name} preview`}
+                      className="w-full h-full object-contain"
+                      loading="lazy"
+                      onError={(e) => {
+                        // Fallback to emoji if image fails to load
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = "none";
+                        const fallback =
+                          target.nextElementSibling as HTMLElement;
+                        if (fallback) fallback.style.display = "flex";
+                      }}
+                    />
+                    {/* Fallback emoji */}
+                    <div
+                      className="w-full h-full flex items-center justify-center text-xl"
+                      style={{ display: "none" }}
+                    >
+                      {template.type === "hero" && "🎯"}
+                      {template.type === "header" && "📄"}
+                      {template.type === "content" && "📝"}
+                      {template.type === "footer" && "🔗"}
+                    </div>
                   </div>
 
                   {/* Content */}
