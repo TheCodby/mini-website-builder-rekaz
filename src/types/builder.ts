@@ -29,6 +29,20 @@ export interface SectionProps {
   buttonUrl?: string;
   content?: string;
   images?: string[];
+  navLinks?: NavLink[];
+  footerDescription?: string;
+  copyright?: string;
+  footerLinks?: FooterLinkSection[];
+}
+
+export interface NavLink {
+  name: string;
+  href: string;
+}
+
+export interface FooterLinkSection {
+  title: string;
+  links: NavLink[];
 }
 
 export interface BuilderState {

@@ -114,12 +114,6 @@ export const HeroSection = memo<HeroSectionProps>(
             </button>
           )}
         </div>
-
-        {!isPreviewMode && (
-          <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-black bg-opacity-75 text-white px-2 py-1 sm:px-3 sm:py-1 rounded text-xs sm:text-sm font-medium backdrop-blur-sm">
-            Hero Section
-          </div>
-        )}
       </section>
     );
   }

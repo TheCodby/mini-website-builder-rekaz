@@ -12,7 +12,9 @@ export const FooterSection = memo<FooterSectionProps>(
   ({
     sectionId,
     title = "Your Company",
-    description = "© 2024 Your Company. All rights reserved.",
+    footerDescription = "Building amazing digital experiences for our customers and communities worldwide.",
+    copyright = "© 2024 Your Company. All rights reserved.",
+    footerLinks,
     backgroundColor = "#1f2937",
     textColor = "#ffffff",
     isSelected = false,
@@ -31,7 +33,8 @@ export const FooterSection = memo<FooterSectionProps>(
     // Ensure proper border color based on text color
     const borderColor = textColor ? `${textColor}20` : "#374151";
 
-    const footerSections = [
+    // Use custom footer links if provided, otherwise use defaults
+    const footerSections = footerLinks || [
       {
         title: "Company",
         links: [
@@ -103,8 +106,7 @@ export const FooterSection = memo<FooterSectionProps>(
                 </h3>
               )}
               <p className="text-sm sm:text-base lg:text-lg opacity-90 max-w-md leading-relaxed">
-                Building amazing digital experiences for our customers and
-                communities worldwide.
+                {footerDescription}
               </p>
             </div>
 
@@ -135,15 +137,9 @@ export const FooterSection = memo<FooterSectionProps>(
             className="border-t pt-6 sm:pt-8 text-center opacity-75"
             style={{ borderTopColor: borderColor }}
           >
-            <p className="text-xs sm:text-sm lg:text-base">{description}</p>
+            <p className="text-xs sm:text-sm lg:text-base">{copyright}</p>
           </div>
         </div>
-
-        {!isPreviewMode && (
-          <div className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-white bg-opacity-20 text-white px-2 py-1 sm:px-3 sm:py-1 rounded text-xs sm:text-sm font-medium backdrop-blur-sm">
-            Footer Section
-          </div>
-        )}
       </footer>
     );
   }

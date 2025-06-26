@@ -41,6 +41,12 @@ const sectionTemplates: SectionTemplate[] = [
       title: "Your Brand",
       backgroundColor: "#ffffff",
       textColor: "#1f2937",
+      navLinks: [
+        { name: "Home", href: "#" },
+        { name: "About", href: "#" },
+        { name: "Services", href: "#" },
+        { name: "Contact", href: "#" },
+      ],
     },
   },
   {
@@ -65,9 +71,29 @@ const sectionTemplates: SectionTemplate[] = [
     preview: "🔗",
     defaultProps: {
       title: "Your Company",
-      description: "© 2024 Your Company. All rights reserved.",
+      footerDescription:
+        "Building amazing digital experiences for our customers and communities worldwide.",
+      copyright: "© 2024 Your Company. All rights reserved.",
       backgroundColor: "#1f2937",
       textColor: "#ffffff",
+      footerLinks: [
+        {
+          title: "Company",
+          links: [
+            { name: "About", href: "#" },
+            { name: "Careers", href: "#" },
+            { name: "Contact", href: "#" },
+          ],
+        },
+        {
+          title: "Support",
+          links: [
+            { name: "Help Center", href: "#" },
+            { name: "Privacy", href: "#" },
+            { name: "Terms", href: "#" },
+          ],
+        },
+      ],
     },
   },
 ];

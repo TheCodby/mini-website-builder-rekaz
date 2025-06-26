@@ -162,17 +162,31 @@ export const PropertiesPanel = ({
    * Handle regular input changes with normal debouncing
    */
   const handleInputChange = useCallback(
-    (key: string, value: string) => {
+    (key: string, value: string | unknown[]) => {
       if (!selectedSection) return;
 
+      // Parse JSON strings back to objects/arrays for complex properties
+      let parsedValue: unknown = value;
+      if (
+        typeof value === "string" &&
+        (key === "navLinks" || key === "footerLinks")
+      ) {
+        try {
+          parsedValue = JSON.parse(value);
+        } catch {
+          // If parsing fails, keep as string
+          parsedValue = value;
+        }
+      }
+
       // Immediate UI update for responsive feel
-      const newLocalProps = { ...localProps, [key]: value };
+      const newLocalProps = { ...localProps, [key]: parsedValue };
       setLocalProps(newLocalProps);
 
       // Track pending changes
       pendingUpdatesRef.current = {
         ...pendingUpdatesRef.current,
-        [key]: value,
+        [key]: parsedValue,
       };
 
       // Clear existing timeout
@@ -186,6 +200,16 @@ export const PropertiesPanel = ({
       }, 300);
     },
     [selectedSection, localProps, debouncedUpdate]
+  );
+
+  /**
+   * Handle array property updates directly
+   */
+  const handleArrayUpdate = useCallback(
+    (key: string, value: unknown[]) => {
+      handleInputChange(key, value);
+    },
+    [handleInputChange]
   );
 
   // Cleanup timeouts on unmount
@@ -415,6 +439,56 @@ export const PropertiesPanel = ({
             </div>
           )}
 
+          {/* Footer Description */}
+          {selectedSection.props.footerDescription !== undefined && (
+            <div className="space-y-2">
+              <div className="relative group">
+                <textarea
+                  id="footer-description-input"
+                  value={localProps.footerDescription || ""}
+                  onChange={(e) => {
+                    handleInputChange("footerDescription", e.target.value);
+                  }}
+                  rows={3}
+                  className="peer w-full px-4 py-4 bg-white/80 backdrop-blur-sm text-gray-900 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-primary-500 focus:bg-white placeholder-transparent resize-none transition-all duration-300 shadow-sm hover:shadow-md focus:shadow-lg hover:border-primary-300"
+                  placeholder="Enter footer description..."
+                />
+                <label
+                  htmlFor="footer-description-input"
+                  className="absolute left-4 -top-2.5 bg-white px-2 text-sm font-medium text-primary-600 transition-all duration-300 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:font-normal peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-medium peer-focus:text-primary-600"
+                >
+                  🏢 Footer Description
+                </label>
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary-500/20 to-primary-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+              </div>
+            </div>
+          )}
+
+          {/* Copyright */}
+          {selectedSection.props.copyright !== undefined && (
+            <div className="space-y-2">
+              <div className="relative group">
+                <input
+                  type="text"
+                  id="copyright-input"
+                  value={localProps.copyright || ""}
+                  onChange={(e) =>
+                    handleInputChange("copyright", e.target.value)
+                  }
+                  className="peer w-full px-4 py-4 bg-white/80 backdrop-blur-sm text-gray-900 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-primary-500 focus:bg-white placeholder-transparent transition-all duration-300 shadow-sm hover:shadow-md focus:shadow-lg hover:border-primary-300"
+                  placeholder="Enter copyright..."
+                />
+                <label
+                  htmlFor="copyright-input"
+                  className="absolute left-4 -top-2.5 bg-white px-2 text-sm font-medium text-primary-600 transition-all duration-300 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:font-normal peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-medium peer-focus:text-primary-600"
+                >
+                  ©️ Copyright
+                </label>
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary-500/20 to-primary-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+              </div>
+            </div>
+          )}
+
           {(selectedSection.props.buttonText !== undefined ||
             selectedSection.props.buttonUrl !== undefined) && (
             <div className="space-y-6">
@@ -475,6 +549,273 @@ export const PropertiesPanel = ({
             </div>
           )}
         </div>
+
+        {/* Navigation Links Section */}
+        {selectedSection.props.navLinks !== undefined && (
+          <div className="space-y-6 min-w-0">
+            <h3 className="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2 truncate flex items-center">
+              <span className="w-2 h-2 bg-gradient-to-r from-primary-500 to-primary-400 rounded-full mr-3"></span>
+              Navigation Links
+            </h3>
+
+            <div className="space-y-4">
+              {(localProps.navLinks || []).map((link, index) => (
+                <div
+                  key={index}
+                  className="bg-white border-2 border-gray-200 p-4 rounded-xl space-y-4 hover:border-primary-200 transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-sm font-semibold text-gray-800 flex items-center">
+                      <span className="w-2 h-2 bg-primary-500 rounded-full mr-2"></span>
+                      Link {index + 1}
+                    </h4>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newLinks = [...(localProps.navLinks || [])];
+                        newLinks.splice(index, 1);
+                        handleArrayUpdate("navLinks", newLinks);
+                      }}
+                      className="text-red-500 hover:text-red-700 text-sm font-medium hover:bg-red-50 px-2 py-1 rounded transition-colors"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        🏷️ Link Name
+                      </label>
+                      <input
+                        type="text"
+                        value={link.name}
+                        onChange={(e) => {
+                          const newLinks = [...(localProps.navLinks || [])];
+                          newLinks[index] = {
+                            ...newLinks[index],
+                            name: e.target.value,
+                          };
+                          handleArrayUpdate("navLinks", newLinks);
+                        }}
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:bg-white text-gray-900 placeholder-gray-500 transition-all duration-200"
+                        placeholder="e.g., Home, About, Services"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        🔗 Link URL
+                      </label>
+                      <input
+                        type="text"
+                        value={link.href}
+                        onChange={(e) => {
+                          const newLinks = [...(localProps.navLinks || [])];
+                          newLinks[index] = {
+                            ...newLinks[index],
+                            href: e.target.value,
+                          };
+                          handleArrayUpdate("navLinks", newLinks);
+                        }}
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:bg-white text-gray-900 placeholder-gray-500 transition-all duration-200 font-mono text-sm"
+                        placeholder="e.g., /, /about, /services"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                onClick={() => {
+                  const newLinks = [
+                    ...(localProps.navLinks || []),
+                    { name: "New Link", href: "#" },
+                  ];
+                  handleArrayUpdate("navLinks", newLinks);
+                }}
+                className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-600 hover:border-primary-400 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 font-medium"
+              >
+                ➕ Add Navigation Link
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Footer Links Section */}
+        {selectedSection.props.footerLinks !== undefined && (
+          <div className="space-y-6 min-w-0">
+            <h3 className="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2 truncate flex items-center">
+              <span className="w-2 h-2 bg-gradient-to-r from-primary-500 to-primary-400 rounded-full mr-3"></span>
+              Footer Links
+            </h3>
+
+            <div className="space-y-6">
+              {(localProps.footerLinks || []).map((section, sectionIndex) => (
+                <div
+                  key={sectionIndex}
+                  className="bg-white border-2 border-gray-200 p-5 rounded-xl space-y-5 hover:border-primary-200 transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-base font-semibold text-gray-800 flex items-center">
+                      <span className="w-2 h-2 bg-primary-500 rounded-full mr-2"></span>
+                      Section {sectionIndex + 1}
+                    </h4>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newSections = [...(localProps.footerLinks || [])];
+                        newSections.splice(sectionIndex, 1);
+                        handleArrayUpdate("footerLinks", newSections);
+                      }}
+                      className="text-red-500 hover:text-red-700 text-sm font-medium hover:bg-red-50 px-2 py-1 rounded transition-colors"
+                    >
+                      Remove Section
+                    </button>
+                  </div>
+
+                  {/* Section Title */}
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      📂 Section Title
+                    </label>
+                    <input
+                      type="text"
+                      value={section.title}
+                      onChange={(e) => {
+                        const newSections = [...(localProps.footerLinks || [])];
+                        newSections[sectionIndex] = {
+                          ...newSections[sectionIndex],
+                          title: e.target.value,
+                        };
+                        handleArrayUpdate("footerLinks", newSections);
+                      }}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:bg-white text-gray-900 placeholder-gray-500 transition-all duration-200 font-medium"
+                      placeholder="e.g., Company, Support, Resources"
+                    />
+                  </div>
+
+                  {/* Links in this section */}
+                  <div className="space-y-4">
+                    <h5 className="text-sm font-medium text-gray-700 flex items-center">
+                      <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-2"></span>
+                      Links in this section
+                    </h5>
+                    <div className="space-y-3">
+                      {section.links.map((link, linkIndex) => (
+                        <div
+                          key={linkIndex}
+                          className="bg-gray-50 border border-gray-200 p-4 rounded-lg space-y-3 hover:bg-gray-100 transition-colors"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium text-gray-600">
+                              Link {linkIndex + 1}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newSections = [
+                                  ...(localProps.footerLinks || []),
+                                ];
+                                newSections[sectionIndex].links.splice(
+                                  linkIndex,
+                                  1
+                                );
+                                handleArrayUpdate("footerLinks", newSections);
+                              }}
+                              className="text-red-500 hover:text-red-700 text-xs font-medium hover:bg-red-50 px-2 py-1 rounded transition-colors"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                          <div className="space-y-3">
+                            <div className="space-y-2">
+                              <label className="block text-sm font-medium text-gray-700">
+                                🏷️ Link Name
+                              </label>
+                              <input
+                                type="text"
+                                value={link.name}
+                                onChange={(e) => {
+                                  const newSections = [
+                                    ...(localProps.footerLinks || []),
+                                  ];
+                                  newSections[sectionIndex].links[linkIndex] = {
+                                    ...newSections[sectionIndex].links[
+                                      linkIndex
+                                    ],
+                                    name: e.target.value,
+                                  };
+                                  handleArrayUpdate("footerLinks", newSections);
+                                }}
+                                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:bg-white text-gray-900 placeholder-gray-500 transition-all duration-200"
+                                placeholder="e.g., About, Privacy, Terms"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="block text-sm font-medium text-gray-700">
+                                🔗 Link URL
+                              </label>
+                              <input
+                                type="text"
+                                value={link.href}
+                                onChange={(e) => {
+                                  const newSections = [
+                                    ...(localProps.footerLinks || []),
+                                  ];
+                                  newSections[sectionIndex].links[linkIndex] = {
+                                    ...newSections[sectionIndex].links[
+                                      linkIndex
+                                    ],
+                                    href: e.target.value,
+                                  };
+                                  handleArrayUpdate("footerLinks", newSections);
+                                }}
+                                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:bg-white text-gray-900 placeholder-gray-500 transition-all duration-200 font-mono text-sm"
+                                placeholder="e.g., /about, /privacy, /terms"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newSections = [...(localProps.footerLinks || [])];
+                        newSections[sectionIndex].links.push({
+                          name: "New Link",
+                          href: "#",
+                        });
+                        handleArrayUpdate("footerLinks", newSections);
+                      }}
+                      className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-primary-400 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 font-medium"
+                    >
+                      ➕ Add Link to Section
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                onClick={() => {
+                  const newSections = [
+                    ...(localProps.footerLinks || []),
+                    {
+                      title: "New Section",
+                      links: [{ name: "New Link", href: "#" }],
+                    },
+                  ];
+                  handleArrayUpdate("footerLinks", newSections);
+                }}
+                className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-xl text-gray-600 hover:border-primary-400 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200 font-medium"
+              >
+                ➕ Add Footer Section
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Styling Section */}
         <div className="space-y-8 min-w-0">

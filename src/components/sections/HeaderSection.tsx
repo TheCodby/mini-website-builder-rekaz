@@ -12,6 +12,7 @@ export const HeaderSection = memo<HeaderSectionProps>(
   ({
     sectionId,
     title = "Your Brand",
+    navLinks,
     backgroundColor = "#ffffff",
     textColor = "#1f2937",
     isSelected = false,
@@ -37,7 +38,8 @@ export const HeaderSection = memo<HeaderSectionProps>(
     // Ensure proper border color based on text color
     const borderColor = textColor ? `${textColor}20` : "#e5e7eb";
 
-    const navLinks = [
+    // Use custom nav links if provided, otherwise use defaults
+    const navigationLinks = navLinks || [
       { name: "Home", href: "#" },
       { name: "About", href: "#" },
       { name: "Services", href: "#" },
@@ -98,7 +100,7 @@ export const HeaderSection = memo<HeaderSectionProps>(
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-4 lg:space-x-6 flex-shrink-0">
-            {navLinks.map((link, index) => (
+            {navigationLinks.map((link, index) => (
               <a
                 key={index}
                 href={link.href}
@@ -159,7 +161,7 @@ export const HeaderSection = memo<HeaderSectionProps>(
             }}
           >
             <nav className="px-4 py-3 space-y-1 max-w-full">
-              {navLinks.map((link, index) => (
+              {navigationLinks.map((link, index) => (
                 <a
                   key={index}
                   href={link.href}
@@ -175,13 +177,6 @@ export const HeaderSection = memo<HeaderSectionProps>(
                 </a>
               ))}
             </nav>
-          </div>
-        )}
-
-        {/* Edit Mode Label */}
-        {!isPreviewMode && (
-          <div className="absolute top-1 sm:top-2 right-1 sm:right-2 bg-black bg-opacity-75 text-white px-2 py-1 sm:px-3 sm:py-1 rounded text-xs sm:text-sm font-medium backdrop-blur-sm z-10">
-            Header Section
           </div>
         )}
       </header>
