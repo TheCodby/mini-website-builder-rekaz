@@ -1,5 +1,7 @@
 import { memo } from "react";
 
+import type { ExportMetadata, ImportOptions } from "@/types/builder";
+
 interface HeaderProps {
   isPreviewMode: boolean;
   onTogglePreview: () => void;
@@ -15,6 +17,13 @@ interface HeaderProps {
   canUndo?: boolean;
   canRedo?: boolean;
   lastAction?: string;
+  // Export/Import functionality
+  onExport?: (
+    metadata?: Partial<ExportMetadata>
+  ) => Promise<{ success: boolean; filename?: string; error?: string }>;
+  onImport?: (
+    options?: ImportOptions
+  ) => Promise<{ success: boolean; error?: string; warnings?: string[] }>;
 }
 
 export const Header = memo<HeaderProps>(
@@ -32,13 +41,69 @@ export const Header = memo<HeaderProps>(
     canUndo = false,
     canRedo = false,
     lastAction,
+    onExport,
+    onImport,
   }) => {
-    const handleExport = () => {
-      console.log("Export functionality coming soon");
+    const handleExport = async () => {
+      if (!onExport) {
+        console.log("Export functionality not available");
+        return;
+      }
+
+      try {
+        const result = await onExport({
+          name: `Website Export ${new Date().toLocaleDateString()}`,
+          description: "Exported from Mini Website Builder",
+          author: "Website Builder User",
+        });
+
+        if (result.success) {
+          // You could show a success toast here
+          console.log(`Exported successfully: ${result.filename}`);
+        } else {
+          // You could show an error toast here
+          console.error("Export failed:", result.error);
+          alert(`Export failed: ${result.error}`);
+        }
+      } catch (error) {
+        console.error("Export error:", error);
+        alert("Export failed due to an unexpected error");
+      }
     };
 
-    const handleImport = () => {
-      console.log("Import functionality coming soon");
+    const handleImport = async () => {
+      if (!onImport) {
+        console.log("Import functionality not available");
+        return;
+      }
+
+      try {
+        const result = await onImport({
+          replaceExisting: true,
+          preserveIds: false,
+          mergeMode: "replace",
+        });
+
+        if (result.success) {
+          // You could show a success toast here
+          console.log("Imported successfully");
+          if (result.warnings && result.warnings.length > 0) {
+            console.warn("Import warnings:", result.warnings);
+            alert(
+              `Import successful with warnings:\n${result.warnings.join("\n")}`
+            );
+          } else {
+            alert("Website imported successfully!");
+          }
+        } else {
+          // You could show an error toast here
+          console.error("Import failed:", result.error);
+          alert(`Import failed: ${result.error}`);
+        }
+      } catch (error) {
+        console.error("Import error:", error);
+        alert("Import failed due to an unexpected error");
+      }
     };
 
     return (

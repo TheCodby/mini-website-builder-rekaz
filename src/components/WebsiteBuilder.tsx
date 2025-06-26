@@ -272,6 +272,8 @@ export const WebsiteBuilder = () => {
             canUndo={historyInfo.canUndo}
             canRedo={historyInfo.canRedo}
             lastAction={historyInfo.lastAction?.description}
+            onExport={actions.handleExport}
+            onImport={actions.handleImport}
           />
 
           {/* Mobile: Stack panels with overlays */}
@@ -431,6 +433,8 @@ export const WebsiteBuilder = () => {
               canUndo={historyInfo.canUndo}
               canRedo={historyInfo.canRedo}
               lastAction={historyInfo.lastAction?.description}
+              onExport={actions.handleExport}
+              onImport={actions.handleImport}
             />
 
             <div className="flex-1 flex overflow-hidden">
@@ -514,6 +518,8 @@ export const WebsiteBuilder = () => {
             canUndo={historyInfo.canUndo}
             canRedo={historyInfo.canRedo}
             lastAction={historyInfo.lastAction?.description}
+            onExport={actions.handleExport}
+            onImport={actions.handleImport}
           />
 
           <div className="flex-1 flex overflow-hidden">

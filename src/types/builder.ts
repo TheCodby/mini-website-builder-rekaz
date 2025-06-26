@@ -78,6 +78,38 @@ export interface HistoryState {
   readonly currentIndex: number;
 }
 
+/**
+ * Export/Import System Types
+ * For saving and loading website configurations
+ */
+export interface ExportData {
+  readonly version: string;
+  readonly timestamp: number;
+  readonly metadata: ExportMetadata;
+  readonly sections: Section[];
+}
+
+export interface ExportMetadata {
+  readonly name: string;
+  readonly description?: string;
+  readonly author?: string;
+  readonly tags?: string[];
+  readonly builderVersion: string;
+}
+
+export interface ImportValidationResult {
+  readonly isValid: boolean;
+  readonly errors: string[];
+  readonly warnings: string[];
+  readonly data?: ExportData;
+}
+
+export interface ImportOptions {
+  readonly replaceExisting: boolean;
+  readonly preserveIds: boolean;
+  readonly mergeMode: "replace" | "append" | "prepend";
+}
+
 export type SectionWithoutOrder = Omit<Section, "order">;
 export type PartialSectionProps = Partial<SectionProps>;
 export type SectionUpdate = Pick<Section, "id"> & {

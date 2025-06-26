@@ -8,7 +8,18 @@ import type {
   HistoryActionType,
   HistoryableState,
   HistoryState,
+  ExportMetadata,
+  ImportOptions,
 } from "@/types/builder";
+import {
+  exportBuilderData,
+  downloadJSON,
+  generateFilename,
+  createFileInput,
+  readJSONFile,
+  validateImportData,
+  processImportedSections,
+} from "@/utils/exportImport";
 
 /**
  * Configuration constants following clean code principles
@@ -336,6 +347,114 @@ export const useBuilderState = () => {
   }, [historyState, executeHistoryAction]);
 
   /**
+   * Export/Import functions
+   */
+  const handleExport = useCallback(
+    async (metadata: Partial<ExportMetadata> = {}) => {
+      try {
+        const exportData = exportBuilderData(builderState.sections, metadata);
+        const filename = generateFilename(exportData.metadata);
+        downloadJSON(exportData, filename);
+
+        console.log("Website exported successfully");
+        return { success: true, filename };
+      } catch (error) {
+        console.error("Export failed:", error);
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : "Export failed",
+        };
+      }
+    },
+    [builderState.sections]
+  );
+
+  const handleImport = useCallback(
+    async (
+      options: ImportOptions = {
+        replaceExisting: true,
+        preserveIds: false,
+        mergeMode: "replace",
+      }
+    ) => {
+      return new Promise<{
+        success: boolean;
+        error?: string;
+        warnings?: string[];
+      }>((resolve) => {
+        const input = createFileInput(async (file) => {
+          try {
+            const jsonData = await readJSONFile(file);
+            const validation = validateImportData(jsonData);
+
+            if (!validation.isValid) {
+              resolve({
+                success: false,
+                error: `Invalid file format: ${validation.errors.join(", ")}`,
+              });
+              return;
+            }
+
+            if (!validation.data) {
+              resolve({
+                success: false,
+                error: "No valid data found in file",
+              });
+              return;
+            }
+
+            // Process and apply imported sections
+            const processedSections = processImportedSections(
+              validation.data.sections,
+              builderState.sections,
+              options
+            );
+
+            // Create history entry for import
+            const previousState = getHistoryableState(builderState);
+            const newState: HistoryableState = { sections: processedSections };
+
+            const historyAction = createHistoryAction(
+              "ADD_SECTION", // Using ADD_SECTION as import is essentially adding sections
+              `Imported ${validation.data.sections.length} sections from ${validation.data.metadata.name}`,
+              previousState,
+              newState
+            );
+
+            // Update builder state
+            setBuilderState((prev) => ({
+              ...prev,
+              sections: processedSections,
+              selectedSectionId: null, // Clear selection after import
+            }));
+
+            // Add to history
+            setTimeout(() => addToHistory(historyAction), 0);
+
+            console.log("Website imported successfully");
+            resolve({
+              success: true,
+              warnings:
+                validation.warnings.length > 0
+                  ? validation.warnings
+                  : undefined,
+            });
+          } catch (error) {
+            resolve({
+              success: false,
+              error: error instanceof Error ? error.message : "Import failed",
+            });
+          }
+        });
+
+        document.body.appendChild(input);
+        input.click();
+      });
+    },
+    [builderState, addToHistory]
+  );
+
+  /**
    * Computed values using useMemo for performance
    */
   const historyInfo = useMemo(
@@ -365,6 +484,8 @@ export const useBuilderState = () => {
       handleAddSectionAtPosition,
       handleUndo,
       handleRedo,
+      handleExport,
+      handleImport,
     },
   };
 };
