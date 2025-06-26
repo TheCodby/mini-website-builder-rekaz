@@ -67,7 +67,7 @@ export const BuilderArea = memo<BuilderAreaProps>(
                 </p>
               </div>
               <div className="px-3 py-1 bg-primary-500 text-white rounded-full text-sm font-medium">
-                Sections {sections.length}
+                {sections.length}
               </div>
             </div>
           </div>
