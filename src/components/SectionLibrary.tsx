@@ -157,25 +157,6 @@ export const SectionLibrary = ({
                     <p className="text-sm text-gray-600 leading-relaxed mb-3">
                       {template.description}
                     </p>
-                    <div className="flex items-center text-xs text-gray-500">
-                      <svg
-                        className="w-5 h-5 text-primary-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d={
-                            isMobile
-                              ? "M12 6v6m0 0v6m0-6h6m-6 0H6"
-                              : "M4 8h16M4 16h16"
-                          }
-                        />
-                      </svg>
-                    </div>
                   </div>
                 </div>
               </DraggableTemplate>
@@ -188,8 +169,10 @@ export const SectionLibrary = ({
       {!isMobile && (
         <div className="p-6 border-t border-gray-200 bg-gray-50">
           <div className="text-center">
-            <p className="text-sm text-gray-500 mb-2">Need more sections?</p>
-            <p className="text-xs text-gray-400">More templates coming soon</p>
+            <p className="text-sm text-gray-500">
+              {sectionTemplates.length} section
+              {sectionTemplates.length !== 1 ? "s" : ""} available
+            </p>
           </div>
         </div>
       )}
