@@ -92,9 +92,9 @@ export const SectionLibrary = ({
         >
           {isTablet && collapsed ? (
             <div className="flex flex-col items-center">
-              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mb-2">
+              <div className="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center mb-2">
                 <svg
-                  className="w-4 h-4 text-blue-600"
+                  className="w-4 h-4 text-primary-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -145,39 +145,37 @@ export const SectionLibrary = ({
               >
                 <div className="flex items-start space-x-4">
                   {/* Icon */}
-                  <div className="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl group-hover:bg-blue-100 transition-colors duration-200">
+                  <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center text-xl group-hover:bg-primary-100 transition-colors duration-200">
                     {template.preview}
                   </div>
 
                   {/* Content */}
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors duration-200 mb-1">
+                    <h3 className="font-medium text-gray-900 group-hover:text-primary-600 transition-colors duration-200 mb-1">
                       {template.name}
                     </h3>
-                    <p className="text-sm text-gray-500 leading-relaxed">
+                    <p className="text-sm text-gray-600 leading-relaxed mb-3">
                       {template.description}
                     </p>
-                  </div>
-
-                  {/* Add/Drag icon */}
-                  <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    <svg
-                      className="w-5 h-5 text-blue-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d={
-                          isMobile
-                            ? "M12 6v6m0 0v6m0-6h6m-6 0H6"
-                            : "M4 8h16M4 16h16"
-                        }
-                      />
-                    </svg>
+                    <div className="flex items-center text-xs text-gray-500">
+                      <svg
+                        className="w-5 h-5 text-primary-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d={
+                            isMobile
+                              ? "M12 6v6m0 0v6m0-6h6m-6 0H6"
+                              : "M4 8h16M4 16h16"
+                          }
+                        />
+                      </svg>
+                    </div>
                   </div>
                 </div>
               </DraggableTemplate>

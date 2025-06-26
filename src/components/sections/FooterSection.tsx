@@ -57,16 +57,28 @@ export const FooterSection = memo<FooterSectionProps>(
           !isPreviewMode ? "cursor-pointer" : ""
         } ${
           isSelected && !isPreviewMode
-            ? "ring-2 ring-blue-500 ring-offset-2"
+            ? "ring-2 ring-primary-500 ring-offset-2"
             : ""
         } ${
           !isPreviewMode
-            ? "hover:ring-1 hover:ring-blue-300 hover:ring-offset-1"
+            ? "hover:ring-1 hover:ring-primary-300 hover:ring-offset-1"
             : ""
         }`}
         style={{
           backgroundColor: backgroundColor || "#1f2937",
           borderTopColor: borderColor,
+          ...(isSelected &&
+            !isPreviewMode && {
+              ringColor: "#df625b",
+              boxShadow: "0 0 0 2px #df625b, 0 0 0 4px rgba(223, 98, 91, 0.1)",
+            }),
+          ...(!isPreviewMode && {
+            ":hover": {
+              ringColor: "#f87171",
+              boxShadow:
+                "0 0 0 1px #f87171, 0 0 0 3px rgba(248, 113, 113, 0.1)",
+            },
+          }),
         }}
         onClick={handleClick}
         role={isPreviewMode ? "contentinfo" : "button"}
@@ -106,7 +118,7 @@ export const FooterSection = memo<FooterSectionProps>(
                     <li key={linkIndex}>
                       <a
                         href={link.href}
-                        className="text-sm sm:text-base opacity-90 hover:opacity-100 transition-opacity py-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded block touch-target"
+                        className="text-sm sm:text-base opacity-90 hover:opacity-100 transition-opacity py-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 rounded block touch-target"
                         onClick={(e) => e.preventDefault()}
                         style={{ color: textColor || "#ffffff" }}
                       >

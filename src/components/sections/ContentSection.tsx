@@ -35,14 +35,28 @@ export const ContentSection = memo<ContentSectionProps>(
           !isPreviewMode ? "cursor-pointer" : ""
         } ${
           isSelected && !isPreviewMode
-            ? "ring-2 ring-blue-500 ring-offset-2"
+            ? "ring-2 ring-primary-500 ring-offset-2"
             : ""
         } ${
           !isPreviewMode
-            ? "hover:ring-1 hover:ring-blue-300 hover:ring-offset-1"
+            ? "hover:ring-1 hover:ring-primary-300 hover:ring-offset-1"
             : ""
         }`}
-        style={{ backgroundColor: backgroundColor || "#ffffff" }}
+        style={{
+          backgroundColor: backgroundColor || "#ffffff",
+          ...(isSelected &&
+            !isPreviewMode && {
+              ringColor: "#df625b",
+              boxShadow: "0 0 0 2px #df625b, 0 0 0 4px rgba(223, 98, 91, 0.1)",
+            }),
+          ...(!isPreviewMode && {
+            ":hover": {
+              ringColor: "#f87171",
+              boxShadow:
+                "0 0 0 1px #f87171, 0 0 0 3px rgba(248, 113, 113, 0.1)",
+            },
+          }),
+        }}
         onClick={handleClick}
         role={isPreviewMode ? "main" : "button"}
         tabIndex={isPreviewMode ? -1 : 0}

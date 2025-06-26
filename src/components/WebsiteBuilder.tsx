@@ -227,7 +227,10 @@ export const WebsiteBuilder = () => {
             <h1 className="text-xl font-bold text-gray-900">
               Mini Website Builder
             </h1>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg">
+            <button
+              className="px-4 py-2 text-white rounded-lg"
+              style={{ backgroundColor: "#df625b" }}
+            >
               Preview
             </button>
           </header>
@@ -317,7 +320,7 @@ export const WebsiteBuilder = () => {
             {!builderState.isPreviewMode && (
               <button
                 onClick={() => setShowLibrary(true)}
-                className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors z-40"
+                className="fixed bottom-6 right-6 w-14 h-14 bg-primary-600 text-white rounded-full shadow-lg hover:bg-primary-700 transition-colors z-40"
                 aria-label="Add Section"
               >
                 <svg
@@ -489,7 +492,7 @@ export const WebsiteBuilder = () => {
                     !showProperties && (
                       <motion.button
                         onClick={() => setShowProperties(true)}
-                        className="fixed bottom-6 right-6 w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-colors z-40 flex items-center justify-center"
+                        className="fixed bottom-6 right-6 w-14 h-14 bg-primary-600 text-white rounded-full shadow-lg hover:bg-primary-700 transition-colors z-40 flex items-center justify-center"
                         aria-label="Edit selected section"
                         initial={{ scale: 0, opacity: 0, y: 20 }}
                         animate={{

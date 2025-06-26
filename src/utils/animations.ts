@@ -106,8 +106,8 @@ export const dropZoneVariants: Variants = {
   active: {
     opacity: 1,
     scale: 1.02,
-    backgroundColor: "rgba(59, 130, 246, 0.1)",
-    borderColor: "rgba(59, 130, 246, 0.4)",
+    backgroundColor: "#fef2f2",
+    borderColor: "#f87171",
     transition: {
       type: "spring",
       stiffness: 400,

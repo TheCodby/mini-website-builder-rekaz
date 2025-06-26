@@ -228,9 +228,9 @@ export const PropertiesPanel = ({
         >
           {isTablet && collapsed ? (
             <div className="flex flex-col items-center">
-              <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
+              <div className="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center mb-2">
                 <svg
-                  className="w-4 h-4 text-gray-600"
+                  className="w-4 h-4 text-primary-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -296,9 +296,9 @@ export const PropertiesPanel = ({
         >
           {isTablet && collapsed ? (
             <div className="flex flex-col items-center">
-              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mb-2">
+              <div className="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center mb-2">
                 <svg
-                  className="w-4 h-4 text-blue-600"
+                  className="w-4 h-4 text-primary-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -340,155 +340,225 @@ export const PropertiesPanel = ({
         } space-y-8 min-w-0`}
       >
         {/* Content Section */}
-        <div className="space-y-6 min-w-0">
+        <div className="space-y-8 min-w-0">
           <h3 className="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2 truncate">
             Content
           </h3>
 
           {selectedSection.props.title !== undefined && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Title
-              </label>
-              <input
-                type="text"
-                value={localProps.title || ""}
-                onChange={(e) => handleInputChange("title", e.target.value)}
-                className="w-full px-4 py-3 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 transition-colors"
-                placeholder="Enter title..."
-              />
+            <div className="space-y-2">
+              <div className="relative group">
+                <input
+                  type="text"
+                  id="title-input"
+                  value={localProps.title || ""}
+                  onChange={(e) => handleInputChange("title", e.target.value)}
+                  className="peer w-full px-4 py-4 bg-white/80 backdrop-blur-sm text-gray-900 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-primary-500 focus:bg-white placeholder-transparent transition-all duration-300 shadow-sm hover:shadow-md focus:shadow-lg hover:border-primary-300"
+                  placeholder="Enter title..."
+                />
+                <label
+                  htmlFor="title-input"
+                  className="absolute left-4 -top-2.5 bg-white px-2 text-sm font-medium text-primary-600 transition-all duration-300 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:font-normal peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-medium peer-focus:text-primary-600"
+                >
+                  ✨ Title
+                </label>
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary-500/20 to-primary-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+              </div>
             </div>
           )}
 
           {selectedSection.props.subtitle !== undefined && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Subtitle
-              </label>
-              <input
-                type="text"
-                value={localProps.subtitle || ""}
-                onChange={(e) => handleInputChange("subtitle", e.target.value)}
-                className="w-full px-4 py-3 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 transition-colors"
-                placeholder="Enter subtitle..."
-              />
+            <div className="space-y-2">
+              <div className="relative group">
+                <input
+                  type="text"
+                  id="subtitle-input"
+                  value={localProps.subtitle || ""}
+                  onChange={(e) =>
+                    handleInputChange("subtitle", e.target.value)
+                  }
+                  className="peer w-full px-4 py-4 bg-white/80 backdrop-blur-sm text-gray-900 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-primary-500 focus:bg-white placeholder-transparent transition-all duration-300 shadow-sm hover:shadow-md focus:shadow-lg hover:border-primary-300"
+                  placeholder="Enter subtitle..."
+                />
+                <label
+                  htmlFor="subtitle-input"
+                  className="absolute left-4 -top-2.5 bg-white px-2 text-sm font-medium text-primary-600 transition-all duration-300 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:font-normal peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-medium peer-focus:text-primary-600"
+                >
+                  📝 Subtitle
+                </label>
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary-500/20 to-primary-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+              </div>
             </div>
           )}
 
           {selectedSection.props.description !== undefined && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Description
-              </label>
-              <textarea
-                value={localProps.description || ""}
-                onChange={(e) =>
-                  handleInputChange("description", e.target.value)
-                }
-                rows={4}
-                className="w-full px-4 py-3 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 resize-none transition-colors"
-                placeholder="Enter description..."
-              />
+            <div className="space-y-2">
+              <div className="relative group">
+                <textarea
+                  id="description-input"
+                  value={localProps.description || ""}
+                  onChange={(e) => {
+                    handleInputChange("description", e.target.value);
+                  }}
+                  rows={4}
+                  className="peer w-full px-4 py-4 bg-white/80 backdrop-blur-sm text-gray-900 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-primary-500 focus:bg-white placeholder-transparent resize-none transition-all duration-300 shadow-sm hover:shadow-md focus:shadow-lg hover:border-primary-300"
+                  placeholder="Enter description..."
+                />
+                <label
+                  htmlFor="description-input"
+                  className="absolute left-4 -top-2.5 bg-white px-2 text-sm font-medium text-primary-600 transition-all duration-300 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:font-normal peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-medium peer-focus:text-primary-600"
+                >
+                  📄 Description
+                </label>
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary-500/20 to-primary-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+              </div>
             </div>
           )}
 
-          {selectedSection.props.buttonText !== undefined && (
-            <div
-              className={`${
-                isTablet && collapsed ? "space-y-4" : "grid grid-cols-2 gap-4"
-              } min-w-0`}
-            >
-              <div className="min-w-0">
-                <label className="block text-sm font-medium text-gray-700 mb-3 truncate">
-                  Button Text
-                </label>
-                <input
-                  type="text"
-                  value={localProps.buttonText || ""}
-                  onChange={(e) =>
-                    handleInputChange("buttonText", e.target.value)
-                  }
-                  className="w-full px-4 py-3 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 transition-colors min-w-0"
-                  placeholder="Button text..."
-                />
-              </div>
+          {(selectedSection.props.buttonText !== undefined ||
+            selectedSection.props.buttonUrl !== undefined) && (
+            <div className="space-y-6">
+              <h4 className="text-md font-medium text-gray-800 flex items-center">
+                <span className="w-2 h-2 bg-primary-500 rounded-full mr-2"></span>
+                Button Settings
+              </h4>
 
-              {selectedSection.props.buttonUrl !== undefined && (
-                <div className="min-w-0">
-                  <label className="block text-sm font-medium text-gray-700 mb-3 truncate">
-                    Button URL
-                  </label>
-                  <input
-                    type="url"
-                    value={localProps.buttonUrl || ""}
-                    onChange={(e) =>
-                      handleInputChange("buttonUrl", e.target.value)
-                    }
-                    className="w-full px-4 py-3 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 transition-colors min-w-0"
-                    placeholder="https://..."
-                  />
-                </div>
-              )}
+              <div className="space-y-6 min-w-0">
+                {selectedSection.props.buttonText !== undefined && (
+                  <div className="min-w-0">
+                    <div className="relative group">
+                      <input
+                        type="text"
+                        id="button-text-input"
+                        value={localProps.buttonText || ""}
+                        onChange={(e) =>
+                          handleInputChange("buttonText", e.target.value)
+                        }
+                        className="peer w-full px-4 py-4 bg-white/80 backdrop-blur-sm text-gray-900 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-primary-500 focus:bg-white placeholder-transparent transition-all duration-300 shadow-sm hover:shadow-md focus:shadow-lg hover:border-primary-300 min-w-0"
+                        placeholder="Button text..."
+                      />
+                      <label
+                        htmlFor="button-text-input"
+                        className="absolute left-4 -top-2.5 bg-white px-2 text-sm font-medium text-primary-600 transition-all duration-300 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:font-normal peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-medium peer-focus:text-primary-600"
+                      >
+                        🔘 Button Text
+                      </label>
+                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary-500/20 to-primary-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+                    </div>
+                  </div>
+                )}
+
+                {selectedSection.props.buttonUrl !== undefined && (
+                  <div className="min-w-0">
+                    <div className="relative group">
+                      <input
+                        type="url"
+                        id="button-url-input"
+                        value={localProps.buttonUrl || ""}
+                        onChange={(e) =>
+                          handleInputChange("buttonUrl", e.target.value)
+                        }
+                        className="peer w-full px-4 py-4 bg-white/80 backdrop-blur-sm text-gray-900 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-primary-500 focus:bg-white placeholder-transparent transition-all duration-300 shadow-sm hover:shadow-md focus:shadow-lg hover:border-primary-300 min-w-0"
+                        placeholder="https://..."
+                      />
+                      <label
+                        htmlFor="button-url-input"
+                        className="absolute left-4 -top-2.5 bg-white px-2 text-sm font-medium text-primary-600 transition-all duration-300 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:font-normal peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-medium peer-focus:text-primary-600"
+                      >
+                        🔗 Button URL
+                      </label>
+                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary-500/20 to-primary-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
 
         {/* Styling Section */}
-        <div className="space-y-6 min-w-0">
-          <h3 className="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2 truncate">
+        <div className="space-y-8 min-w-0">
+          <h3 className="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2 truncate flex items-center">
+            <span className="w-2 h-2 bg-gradient-to-r from-primary-500 to-primary-400 rounded-full mr-3"></span>
             Styling
           </h3>
 
           {selectedSection.props.backgroundColor !== undefined && (
-            <div>
+            <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-700 mb-3">
-                Background Color
+                🎨 Background Color
               </label>
               <div className="flex items-center space-x-4">
-                <input
-                  type="color"
-                  value={localProps.backgroundColor || "#ffffff"}
-                  onChange={(e) =>
-                    handleColorChange("backgroundColor", e.target.value, true)
-                  }
-                  className="w-16 h-12 border-2 border-gray-300 rounded-lg cursor-pointer"
-                />
-                <input
-                  type="text"
-                  value={localProps.backgroundColor || "#ffffff"}
-                  onChange={(e) =>
-                    handleInputChange("backgroundColor", e.target.value)
-                  }
-                  className="flex-1 px-4 py-3 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 font-mono text-sm transition-colors"
-                  placeholder="#ffffff"
-                />
+                <div className="relative group">
+                  <input
+                    type="color"
+                    value={localProps.backgroundColor || "#ffffff"}
+                    onChange={(e) =>
+                      handleColorChange("backgroundColor", e.target.value, true)
+                    }
+                    className="w-16 h-16 border-3 border-gray-300 rounded-2xl cursor-pointer transition-all duration-300 hover:border-primary-400 focus:border-primary-500 shadow-lg hover:shadow-xl hover:scale-105"
+                  />
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary-500/30 to-primary-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+                </div>
+                <div className="flex-1 relative group">
+                  <input
+                    type="text"
+                    id="bg-color-input"
+                    value={localProps.backgroundColor || "#ffffff"}
+                    onChange={(e) =>
+                      handleInputChange("backgroundColor", e.target.value)
+                    }
+                    className="peer w-full px-4 py-4 bg-white/80 backdrop-blur-sm text-gray-900 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-primary-500 focus:bg-white placeholder-transparent font-mono text-sm transition-all duration-300 shadow-sm hover:shadow-md focus:shadow-lg hover:border-primary-300"
+                    placeholder="#ffffff"
+                  />
+                  <label
+                    htmlFor="bg-color-input"
+                    className="absolute left-4 -top-2.5 bg-white px-2 text-sm font-medium text-primary-600 transition-all duration-300 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:font-normal peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-medium peer-focus:text-primary-600"
+                  >
+                    Hex Code
+                  </label>
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary-500/20 to-primary-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+                </div>
               </div>
             </div>
           )}
 
           {selectedSection.props.textColor !== undefined && (
-            <div>
+            <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-700 mb-3">
-                Text Color
+                ✒️ Text Color
               </label>
               <div className="flex items-center space-x-4">
-                <input
-                  type="color"
-                  value={localProps.textColor || "#000000"}
-                  onChange={(e) =>
-                    handleColorChange("textColor", e.target.value, true)
-                  }
-                  className="w-16 h-12 border-2 border-gray-300 rounded-lg cursor-pointer"
-                />
-                <input
-                  type="text"
-                  value={localProps.textColor || "#000000"}
-                  onChange={(e) =>
-                    handleInputChange("textColor", e.target.value)
-                  }
-                  className="flex-1 px-4 py-3 bg-white text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 font-mono text-sm transition-colors"
-                  placeholder="#000000"
-                />
+                <div className="relative group">
+                  <input
+                    type="color"
+                    value={localProps.textColor || "#000000"}
+                    onChange={(e) =>
+                      handleColorChange("textColor", e.target.value, true)
+                    }
+                    className="w-16 h-16 border-3 border-gray-300 rounded-2xl cursor-pointer transition-all duration-300 hover:border-primary-400 focus:border-primary-500 shadow-lg hover:shadow-xl hover:scale-105"
+                  />
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary-500/30 to-primary-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+                </div>
+                <div className="flex-1 relative group">
+                  <input
+                    type="text"
+                    id="text-color-input"
+                    value={localProps.textColor || "#000000"}
+                    onChange={(e) =>
+                      handleInputChange("textColor", e.target.value)
+                    }
+                    className="peer w-full px-4 py-4 bg-white/80 backdrop-blur-sm text-gray-900 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-primary-500 focus:bg-white placeholder-transparent font-mono text-sm transition-all duration-300 shadow-sm hover:shadow-md focus:shadow-lg hover:border-primary-300"
+                    placeholder="#000000"
+                  />
+                  <label
+                    htmlFor="text-color-input"
+                    className="absolute left-4 -top-2.5 bg-white px-2 text-sm font-medium text-primary-600 transition-all duration-300 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:font-normal peer-focus:-top-2.5 peer-focus:text-sm peer-focus:font-medium peer-focus:text-primary-600"
+                  >
+                    Hex Code
+                  </label>
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary-500/20 to-primary-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+                </div>
               </div>
             </div>
           )}

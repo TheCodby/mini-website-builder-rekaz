@@ -64,11 +64,11 @@ export const HeroSection = memo<HeroSectionProps>(
           !isPreviewMode ? "cursor-pointer" : ""
         } ${
           isSelected && !isPreviewMode
-            ? "ring-2 ring-blue-500 ring-offset-2"
+            ? "ring-2 ring-primary-500 ring-offset-2"
             : ""
         } ${
           !isPreviewMode
-            ? "hover:ring-1 hover:ring-blue-300 hover:ring-offset-1"
+            ? "hover:ring-1 hover:ring-primary-300 hover:ring-offset-1"
             : ""
         }`}
         style={{ backgroundColor: backgroundColor || "#1e40af" }}

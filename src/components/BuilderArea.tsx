@@ -47,16 +47,16 @@ export const BuilderArea = memo<BuilderAreaProps>(
     };
 
     return (
-      <div className="h-full flex flex-col overflow-hidden responsive-container">
+      <div className="h-full flex flex-col overflow-hidden">
         {/* Header */}
         {!isPreviewMode && (
-          <div className="p-6 bg-white border-b border-gray-200 flex-shrink-0">
-            <div className="flex items-center justify-between max-w-full min-w-0">
-              <div className="min-w-0 flex-1">
-                <h2 className="text-xl font-semibold text-gray-900 truncate">
+          <div className="p-6 bg-white border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">
                   Website Builder
                 </h2>
-                <p className="text-sm text-gray-500 mt-1 truncate">
+                <p className="text-sm text-gray-500 mt-1">
                   {sections.length} section{sections.length !== 1 ? "s" : ""}{" "}
                   added
                   {isMobile && selectedSectionId && " • Tap to edit properties"}
@@ -66,8 +66,8 @@ export const BuilderArea = memo<BuilderAreaProps>(
                   {!isMobile && " • Drag to reorder"}
                 </p>
               </div>
-              <div className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium flex-shrink-0">
-                {sections.length}
+              <div className="px-3 py-1 bg-primary-500 text-white rounded-full text-sm font-medium">
+                Sections {sections.length}
               </div>
             </div>
           </div>
@@ -75,7 +75,7 @@ export const BuilderArea = memo<BuilderAreaProps>(
 
         {/* Main content */}
         <div
-          className={`flex-1 overflow-y-auto max-w-full ${
+          className={`flex-1 overflow-y-auto ${
             isPreviewMode ? "bg-white" : "bg-gray-50"
           }`}
           onClick={handleBackgroundClick}
@@ -151,7 +151,7 @@ export const BuilderArea = memo<BuilderAreaProps>(
               <div
                 className={`${isPreviewMode ? "" : "p-6"} space-y-${
                   isPreviewMode ? "0" : "4"
-                } max-w-full overflow-hidden`}
+                }`}
               >
                 {/* Drop zone at the beginning */}
                 {!isPreviewMode && (
