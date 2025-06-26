@@ -1,4 +1,5 @@
 import type { SectionTemplate } from "@/types/builder";
+import { DraggableTemplate } from "./DraggableTemplate";
 
 interface SectionLibraryProps {
   onAddSection: (template: SectionTemplate) => void;
@@ -105,7 +106,9 @@ export const SectionLibrary = ({
                 Section Library
               </h2>
               <p className="text-sm text-gray-500">
-                Click to add sections to your page
+                {isMobile
+                  ? "Click to add sections to your page"
+                  : "Drag or click to add sections to your page"}
               </p>
             </>
           )}
@@ -120,11 +123,11 @@ export const SectionLibrary = ({
       >
         <div className="grid gap-4">
           {sectionTemplates.map((template) => (
-            <button
+            <DraggableTemplate
               key={template.id}
-              onClick={() => onAddSection(template)}
-              className="w-full bg-white border-2 border-gray-200 rounded-xl p-4 text-left hover:border-blue-300 hover:shadow-lg transition-all duration-200 group"
-              aria-label={`Add ${template.name}`}
+              template={template}
+              isMobile={isMobile}
+              onAddSection={onAddSection}
             >
               <div className="flex items-start space-x-4">
                 {/* Icon */}
@@ -142,7 +145,7 @@ export const SectionLibrary = ({
                   </p>
                 </div>
 
-                {/* Add icon */}
+                {/* Add/Drag icon */}
                 <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   <svg
                     className="w-5 h-5 text-blue-600"
@@ -154,12 +157,16 @@ export const SectionLibrary = ({
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                      d={
+                        isMobile
+                          ? "M12 6v6m0 0v6m0-6h6m-6 0H6"
+                          : "M4 8h16M4 16h16"
+                      }
                     />
                   </svg>
                 </div>
               </div>
-            </button>
+            </DraggableTemplate>
           ))}
         </div>
       </div>

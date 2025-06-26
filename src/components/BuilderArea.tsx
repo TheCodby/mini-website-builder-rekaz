@@ -1,12 +1,22 @@
 import { memo } from "react";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+
 import type { Section } from "@/types/builder";
 import { SectionRenderer } from "./SectionRenderer";
+import { DraggableSection } from "./DraggableSection";
+import { DropZone } from "./DropZone";
 
 interface BuilderAreaProps {
   sections: Section[];
   selectedSectionId: string | null;
   isPreviewMode: boolean;
   onSelectSection: (sectionId: string | null) => void;
+  activeId?: string | null;
+  overId?: string | null;
+  isDragging?: boolean;
   isMobile?: boolean;
 }
 
@@ -16,12 +26,16 @@ export const BuilderArea = memo<BuilderAreaProps>(
     selectedSectionId,
     isPreviewMode,
     onSelectSection,
+    activeId = null,
+    overId = null,
+    isDragging = false,
     isMobile = false,
   }) => {
     const sortedSections = [...sections].sort((a, b) => a.order - b.order);
+    const sectionIds = sortedSections.map((section) => section.id);
 
     const handleSectionClick = (sectionId: string) => {
-      if (!isPreviewMode) {
+      if (!isPreviewMode && !activeId) {
         onSelectSection(sectionId);
       }
     };
@@ -46,6 +60,7 @@ export const BuilderArea = memo<BuilderAreaProps>(
                   {sections.length} section{sections.length !== 1 ? "s" : ""}{" "}
                   added
                   {isMobile && selectedSectionId && " • Tap to edit properties"}
+                  {!isMobile && " • Drag to reorder"}
                 </p>
               </div>
               <div className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
@@ -87,14 +102,16 @@ export const BuilderArea = memo<BuilderAreaProps>(
                 <p className="text-gray-600 mb-8 leading-relaxed">
                   {isMobile
                     ? "Tap the + button to add your first section and start creating your website."
-                    : "Choose a section from the library on the left to start building your website."}
+                    : "Choose a section from the library on the left to start building your website, or drag sections directly to the builder."}
                 </p>
 
                 {/* Quick start tips */}
                 <div className="space-y-3 text-left">
                   <div className="flex items-center text-sm text-gray-500">
                     <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                    Add sections to build your page structure
+                    {isMobile
+                      ? "Add sections to build your page structure"
+                      : "Drag sections from the library to build your page"}
                   </div>
                   <div className="flex items-center text-sm text-gray-500">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
@@ -102,52 +119,83 @@ export const BuilderArea = memo<BuilderAreaProps>(
                   </div>
                   <div className="flex items-center text-sm text-gray-500">
                     <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
-                    Use preview mode to see the final result
+                    {isMobile
+                      ? "Use preview mode to see the final result"
+                      : "Drag to reorder sections"}
                   </div>
                 </div>
               </div>
+
+              {/* Drop zones for empty state */}
+              {!isPreviewMode && (
+                <DropZone
+                  id="drop-zone-0"
+                  index={0}
+                  isActive={isDragging}
+                  isOver={overId === "drop-zone-0"}
+                />
+              )}
             </div>
           ) : (
-            // Sections list
-            <div
-              className={`${isPreviewMode ? "" : "p-6"} space-y-${
-                isPreviewMode ? "0" : "4"
-              }`}
+            // Sections list with sortable context
+            <SortableContext
+              items={sectionIds}
+              strategy={verticalListSortingStrategy}
             >
-              {sortedSections.map((section, index) => (
-                <div
-                  key={section.id}
-                  className={`relative group ${
-                    !isPreviewMode ? "rounded-xl overflow-hidden" : ""
-                  } ${
-                    !isPreviewMode && selectedSectionId === section.id
-                      ? "ring-2 ring-blue-500 ring-offset-2 shadow-lg"
-                      : !isPreviewMode
-                      ? "hover:shadow-md transition-shadow duration-200"
-                      : ""
-                  }`}
-                >
-                  <SectionRenderer
-                    section={section}
-                    isSelected={selectedSectionId === section.id}
-                    isPreviewMode={isPreviewMode}
-                    onClick={() => handleSectionClick(section.id)}
+              <div
+                className={`${isPreviewMode ? "" : "p-6"} space-y-${
+                  isPreviewMode ? "0" : "4"
+                }`}
+              >
+                {/* Drop zone at the beginning */}
+                {!isPreviewMode && (
+                  <DropZone
+                    id="drop-zone-0"
+                    index={0}
+                    isActive={isDragging}
+                    isOver={overId === "drop-zone-0"}
                   />
+                )}
 
-                  {!isPreviewMode && selectedSectionId !== section.id && (
-                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm border border-gray-200 text-gray-600 px-3 py-1 rounded-full text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                      Section {index + 1}
-                    </div>
-                  )}
+                {sortedSections.map((section, index) => (
+                  <div key={section.id}>
+                    {isPreviewMode ? (
+                      <SectionRenderer
+                        section={section}
+                        isSelected={selectedSectionId === section.id}
+                        isPreviewMode={isPreviewMode}
+                        onClick={() => handleSectionClick(section.id)}
+                      />
+                    ) : (
+                      <DraggableSection
+                        section={section}
+                        isSelected={selectedSectionId === section.id}
+                        isPreviewMode={isPreviewMode}
+                        isMobile={isMobile}
+                        index={index}
+                      >
+                        <SectionRenderer
+                          section={section}
+                          isSelected={selectedSectionId === section.id}
+                          isPreviewMode={isPreviewMode}
+                          onClick={() => handleSectionClick(section.id)}
+                        />
+                      </DraggableSection>
+                    )}
 
-                  {!isPreviewMode && selectedSectionId === section.id && (
-                    <div className="absolute top-4 right-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                      Section {index + 1} • Selected
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+                    {/* Drop zone after each section */}
+                    {!isPreviewMode && (
+                      <DropZone
+                        id={`drop-zone-${index + 1}`}
+                        index={index + 1}
+                        isActive={isDragging}
+                        isOver={overId === `drop-zone-${index + 1}`}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </SortableContext>
           )}
         </div>
       </div>

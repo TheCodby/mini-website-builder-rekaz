@@ -236,6 +236,81 @@ export const useBuilderState = () => {
     [addToHistory]
   );
 
+  const handleReorderSections = useCallback(
+    (sectionIds: string[]) => {
+      setBuilderState((prev) => {
+        const previousState = getHistoryableState(prev);
+
+        // Create new sections array with updated order
+        const newSections = sectionIds
+          .map((id, index) => {
+            const section = prev.sections.find((s) => s.id === id);
+            return section ? { ...section, order: index } : null;
+          })
+          .filter(Boolean) as Section[];
+
+        const newState: HistoryableState = { sections: newSections };
+
+        const historyAction = createHistoryAction(
+          "REORDER_SECTIONS",
+          "Reordered sections",
+          previousState,
+          newState
+        );
+
+        setTimeout(() => addToHistory(historyAction), 0);
+
+        return {
+          ...prev,
+          sections: newSections,
+        };
+      });
+    },
+    [addToHistory]
+  );
+
+  const handleAddSectionAtPosition = useCallback(
+    (sectionTemplate: SectionTemplate, position: number) => {
+      setBuilderState((prev) => {
+        const newSection: Section = {
+          id: `${sectionTemplate.type}-${Date.now()}`,
+          type: sectionTemplate.type,
+          props: { ...sectionTemplate.defaultProps },
+          order: position,
+        };
+
+        const previousState = getHistoryableState(prev);
+
+        // Insert section at specific position and update order for subsequent sections
+        const newSections = [...prev.sections];
+        newSections.splice(position, 0, newSection);
+
+        // Update order values for all sections
+        const reorderedSections = newSections.map((section, index) => ({
+          ...section,
+          order: index,
+        }));
+
+        const newState: HistoryableState = { sections: reorderedSections };
+
+        const historyAction = createHistoryAction(
+          "ADD_SECTION",
+          `Added ${sectionTemplate.type} section at position ${position + 1}`,
+          previousState,
+          newState
+        );
+
+        setTimeout(() => addToHistory(historyAction), 0);
+
+        return {
+          ...prev,
+          sections: reorderedSections,
+        };
+      });
+    },
+    [addToHistory]
+  );
+
   const handleUndo = useCallback(() => {
     if (historyState.currentIndex >= 0) {
       const action = historyState.actions[historyState.currentIndex];
@@ -286,6 +361,8 @@ export const useBuilderState = () => {
       handleUpdateSection,
       handleUpdateSectionOptimistic,
       handleDeleteSection,
+      handleReorderSections,
+      handleAddSectionAtPosition,
       handleUndo,
       handleRedo,
     },
