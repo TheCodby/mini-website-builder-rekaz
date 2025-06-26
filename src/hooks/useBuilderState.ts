@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import type {
   BuilderState,
   SectionTemplate,
@@ -20,6 +20,7 @@ import {
   validateImportData,
   processImportedSections,
 } from "@/utils/exportImport";
+import { useAutoSave } from "./useAutoSave";
 
 /**
  * Configuration constants following clean code principles
@@ -56,12 +57,55 @@ export const useBuilderState = () => {
     sections: [],
     selectedSectionId: null,
     isPreviewMode: false,
+    showRecoveryModal: false,
+    recoveryModalData: undefined,
   });
 
   const [historyState, setHistoryState] = useState<HistoryState>({
     actions: [],
     currentIndex: -1,
   });
+
+  const [autoSaveRecoveryShown, setAutoSaveRecoveryShown] = useState(false);
+
+  // Initialize auto-save hook
+  const {
+    autoSaveState,
+    loadAutoSavedData,
+    clearAutoSavedData,
+    toggleAutoSave,
+    hasAutoSavedData,
+    getAutoSavedInfo,
+  } = useAutoSave(builderState.sections);
+
+  // Check for auto-saved data on mount
+  useEffect(() => {
+    if (
+      hasAutoSavedData() &&
+      builderState.sections.length === 0 &&
+      !autoSaveRecoveryShown
+    ) {
+      const autoSavedInfo = getAutoSavedInfo();
+      if (autoSavedInfo) {
+        setBuilderState((prev) => ({
+          ...prev,
+          showRecoveryModal: true,
+          recoveryModalData: {
+            lastSaved: autoSavedInfo.lastSaved,
+            sectionsCount: autoSavedInfo.sectionsCount,
+          },
+        }));
+      }
+      setAutoSaveRecoveryShown(true);
+    }
+  }, [
+    hasAutoSavedData,
+    getAutoSavedInfo,
+    loadAutoSavedData,
+    clearAutoSavedData,
+    builderState.sections.length,
+    autoSaveRecoveryShown,
+  ]);
 
   /**
    * History management functions
@@ -455,6 +499,31 @@ export const useBuilderState = () => {
   );
 
   /**
+   * Recovery modal handlers
+   */
+  const handleRecoveryAccept = useCallback(() => {
+    const savedSections = loadAutoSavedData();
+    if (savedSections) {
+      setBuilderState((prev) => ({
+        ...prev,
+        sections: savedSections,
+        showRecoveryModal: false,
+        recoveryModalData: undefined,
+      }));
+      console.log("Auto-saved data recovered successfully");
+    }
+  }, [loadAutoSavedData]);
+
+  const handleRecoveryDismiss = useCallback(() => {
+    clearAutoSavedData();
+    setBuilderState((prev) => ({
+      ...prev,
+      showRecoveryModal: false,
+      recoveryModalData: undefined,
+    }));
+  }, [clearAutoSavedData]);
+
+  /**
    * Computed values using useMemo for performance
    */
   const historyInfo = useMemo(
@@ -473,6 +542,7 @@ export const useBuilderState = () => {
   return {
     builderState,
     historyInfo,
+    autoSaveState,
     actions: {
       handleAddSection,
       handleSelectSection,
@@ -486,6 +556,14 @@ export const useBuilderState = () => {
       handleRedo,
       handleExport,
       handleImport,
+      // Auto-save actions
+      toggleAutoSave,
+      clearAutoSavedData,
+      hasAutoSavedData,
+      getAutoSavedInfo,
+      // Recovery modal actions
+      handleRecoveryAccept,
+      handleRecoveryDismiss,
     },
   };
 };

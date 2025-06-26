@@ -1,7 +1,11 @@
 import { memo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import type { ExportMetadata, ImportOptions } from "@/types/builder";
+import type {
+  ExportMetadata,
+  ImportOptions,
+  AutoSaveState,
+} from "@/types/builder";
 import {
   buttonVariants,
   staggerContainer,
@@ -9,6 +13,7 @@ import {
   modalVariants,
   overlayVariants,
 } from "@/utils/animations";
+import { AutoSaveIndicator } from "./AutoSaveIndicator";
 
 interface HeaderProps {
   isPreviewMode: boolean;
@@ -33,6 +38,10 @@ interface HeaderProps {
   onImport?: (
     options?: ImportOptions
   ) => Promise<{ success: boolean; error?: string; warnings?: string[] }>;
+  // Auto-save functionality
+  autoSaveState?: AutoSaveState;
+  onToggleAutoSave?: (enabled: boolean) => void;
+  onClearAutoSave?: () => void;
 }
 
 export const Header = memo<HeaderProps>(
@@ -53,6 +62,9 @@ export const Header = memo<HeaderProps>(
     lastAction,
     onExport,
     onImport,
+    autoSaveState,
+    onToggleAutoSave,
+    onClearAutoSave,
   }) => {
     // Import modal state
     const [importModal, setImportModal] = useState<{
@@ -309,6 +321,16 @@ export const Header = memo<HeaderProps>(
                   </svg>
                 </button>
               </div>
+            )}
+
+            {/* Auto-save indicator - Only show when auto-save state is available */}
+            {autoSaveState && onToggleAutoSave && onClearAutoSave && (
+              <AutoSaveIndicator
+                autoSaveState={autoSaveState}
+                onToggleAutoSave={onToggleAutoSave}
+                onClearAutoSave={onClearAutoSave}
+                className={isMobile ? "hidden sm:flex" : "flex"}
+              />
             )}
 
             {/* Preview Toggle */}

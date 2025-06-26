@@ -21,12 +21,14 @@ import { BuilderArea } from "./BuilderArea";
 import { PropertiesPanel } from "./PropertiesPanel";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { SectionRenderer } from "./SectionRenderer";
+import { AutoSaveRecoveryModal } from "./AutoSaveRecoveryModal";
 import { useBuilderState } from "@/hooks/useBuilderState";
 import { useResponsive } from "@/hooks/useResponsive";
 import type { SectionTemplate } from "@/types/builder";
 
 export const WebsiteBuilder = () => {
-  const { builderState, historyInfo, actions } = useBuilderState();
+  const { builderState, historyInfo, autoSaveState, actions } =
+    useBuilderState();
   const { isMobile, isTablet, isHydrated } = useResponsive();
   const [showLibrary, setShowLibrary] = useState(false);
   const [showProperties, setShowProperties] = useState(false);
@@ -305,6 +307,9 @@ export const WebsiteBuilder = () => {
               lastAction={historyInfo.lastAction?.description}
               onExport={actions.handleExport}
               onImport={actions.handleImport}
+              autoSaveState={autoSaveState}
+              onToggleAutoSave={actions.toggleAutoSave}
+              onClearAutoSave={actions.clearAutoSavedData}
             />
 
             {/* Mobile: Stack panels with overlays */}
@@ -477,6 +482,9 @@ export const WebsiteBuilder = () => {
               lastAction={historyInfo.lastAction?.description}
               onExport={actions.handleExport}
               onImport={actions.handleImport}
+              autoSaveState={autoSaveState}
+              onToggleAutoSave={actions.toggleAutoSave}
+              onClearAutoSave={actions.clearAutoSavedData}
             />
 
             <div className="flex-1 flex overflow-hidden">
@@ -669,6 +677,15 @@ export const WebsiteBuilder = () => {
             )}
           </DragOverlay>
         </DndContext>
+
+        {/* Recovery Modal */}
+        <AutoSaveRecoveryModal
+          isOpen={builderState.showRecoveryModal || false}
+          lastSaved={builderState.recoveryModalData?.lastSaved || new Date()}
+          sectionsCount={builderState.recoveryModalData?.sectionsCount || 0}
+          onRecover={actions.handleRecoveryAccept}
+          onDismiss={actions.handleRecoveryDismiss}
+        />
       </ErrorBoundary>
     );
   }
@@ -694,6 +711,9 @@ export const WebsiteBuilder = () => {
             lastAction={historyInfo.lastAction?.description}
             onExport={actions.handleExport}
             onImport={actions.handleImport}
+            autoSaveState={autoSaveState}
+            onToggleAutoSave={actions.toggleAutoSave}
+            onClearAutoSave={actions.clearAutoSavedData}
           />
 
           <div className="flex-1 flex overflow-hidden">
@@ -740,6 +760,15 @@ export const WebsiteBuilder = () => {
           )}
         </DragOverlay>
       </DndContext>
+
+      {/* Recovery Modal */}
+      <AutoSaveRecoveryModal
+        isOpen={builderState.showRecoveryModal || false}
+        lastSaved={builderState.recoveryModalData?.lastSaved || new Date()}
+        sectionsCount={builderState.recoveryModalData?.sectionsCount || 0}
+        onRecover={actions.handleRecoveryAccept}
+        onDismiss={actions.handleRecoveryDismiss}
+      />
     </ErrorBoundary>
   );
 };

@@ -12,7 +12,6 @@ import type {
  */
 
 const CURRENT_EXPORT_VERSION = "1.0.0";
-const BUILDER_VERSION = "1.0.0";
 
 /**
  * Export builder state to JSON format
@@ -21,18 +20,19 @@ export const exportBuilderData = (
   sections: Section[],
   metadata: Partial<ExportMetadata> = {}
 ): ExportData => {
+  const now = new Date().toISOString();
   const defaultMetadata: ExportMetadata = {
     name: metadata.name || `Website Export ${new Date().toLocaleDateString()}`,
     description: metadata.description || "Exported website configuration",
     author: metadata.author || "Website Builder User",
     tags: metadata.tags || ["website", "builder"],
-    builderVersion: BUILDER_VERSION,
+    version: CURRENT_EXPORT_VERSION,
+    createdAt: metadata.createdAt || now,
+    updatedAt: now,
+    url: metadata.url,
   };
 
   return {
-    version: CURRENT_EXPORT_VERSION,
-    timestamp: Date.now(),
-    metadata: { ...defaultMetadata, ...metadata },
     sections: sections.map((section) => ({
       ...section,
       // Ensure clean data export
@@ -41,6 +41,7 @@ export const exportBuilderData = (
       props: { ...section.props },
       order: section.order,
     })),
+    metadata: { ...defaultMetadata, ...metadata },
   };
 };
 

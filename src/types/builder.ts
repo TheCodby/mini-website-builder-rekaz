@@ -49,6 +49,19 @@ export interface BuilderState {
   sections: Section[];
   selectedSectionId: string | null;
   isPreviewMode: boolean;
+  showRecoveryModal?: boolean;
+  recoveryModalData?: {
+    lastSaved: Date;
+    sectionsCount: number;
+  };
+}
+
+export interface AutoSaveState {
+  lastSaved: number | null;
+  isAutoSaving: boolean;
+  autoSaveEnabled: boolean;
+  saveError: string | null;
+  hasUnsavedChanges: boolean;
 }
 
 export interface SectionTemplate {
@@ -97,10 +110,8 @@ export interface HistoryState {
  * For saving and loading website configurations
  */
 export interface ExportData {
-  readonly version: string;
-  readonly timestamp: number;
-  readonly metadata: ExportMetadata;
   readonly sections: Section[];
+  readonly metadata: ExportMetadata;
 }
 
 export interface ExportMetadata {
@@ -108,7 +119,10 @@ export interface ExportMetadata {
   readonly description?: string;
   readonly author?: string;
   readonly tags?: string[];
-  readonly builderVersion: string;
+  readonly version: string;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+  readonly url?: string;
 }
 
 export interface ImportValidationResult {
