@@ -36,7 +36,7 @@ export const WebsiteBuilder = () => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
 
-  // Configure drag sensors
+  // Configure drag sensors with optimized touch support
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -46,8 +46,8 @@ export const WebsiteBuilder = () => {
     useSensor(KeyboardSensor),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 250,
-        tolerance: 5,
+        delay: isMobile ? 150 : 250, // Shorter delay on mobile for better responsiveness
+        tolerance: isMobile ? 8 : 5, // Higher tolerance on mobile for easier dragging
       },
     })
   );

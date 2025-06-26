@@ -28,7 +28,7 @@ export const DraggableSection = memo<DraggableSectionProps>(
         section,
         index,
       },
-      disabled: isPreviewMode || isMobile,
+      disabled: isPreviewMode, // Only disable in preview mode, allow mobile dragging
     });
 
     const style = {
@@ -52,33 +52,41 @@ export const DraggableSection = memo<DraggableSectionProps>(
             : "hover:shadow-md"
         } transition-all duration-200`}
       >
-        {/* Drag Handle - Only visible on hover and not on mobile */}
-        {!isMobile && (
+        {/* Drag Handle - Always visible on mobile, hover-based on desktop */}
+        <div
+          {...attributes}
+          {...listeners}
+          className={`absolute top-4 left-4 z-10 transition-opacity duration-200 ${
+            isMobile
+              ? "opacity-100 cursor-grab active:cursor-grabbing"
+              : `opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing ${
+                  isDragging ? "opacity-100" : ""
+                }`
+          }`}
+          aria-label={`${
+            isMobile ? "Touch and hold to reorder" : "Drag to reorder"
+          } ${section.type} section`}
+        >
           <div
-            {...attributes}
-            {...listeners}
-            className={`absolute top-4 left-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab active:cursor-grabbing ${
-              isDragging ? "opacity-100" : ""
+            className={`bg-white/90 backdrop-blur-sm border border-gray-200 rounded-lg p-2 shadow-sm hover:bg-white hover:shadow-md transition-all duration-200 ${
+              isMobile ? "touch-none" : ""
             }`}
-            aria-label={`Drag to reorder ${section.type} section`}
           >
-            <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-lg p-2 shadow-sm hover:bg-white hover:shadow-md transition-all duration-200">
-              <svg
-                className="w-4 h-4 text-gray-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 8h16M4 16h16"
-                />
-              </svg>
-            </div>
+            <svg
+              className="w-4 h-4 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 8h16M4 16h16"
+              />
+            </svg>
           </div>
-        )}
+        </div>
 
         {/* Section Content */}
         <div className={isDragging ? "pointer-events-none" : ""}>
@@ -87,7 +95,11 @@ export const DraggableSection = memo<DraggableSectionProps>(
 
         {/* Section Number Indicator */}
         {!isSelected && (
-          <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm border border-gray-200 text-gray-600 px-3 py-1 rounded-full text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div
+            className={`absolute top-4 right-4 bg-white/90 backdrop-blur-sm border border-gray-200 text-gray-600 px-3 py-1 rounded-full text-sm font-medium transition-opacity duration-200 ${
+              isMobile ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+            }`}
+          >
             Section {index + 1}
           </div>
         )}
@@ -95,6 +107,15 @@ export const DraggableSection = memo<DraggableSectionProps>(
         {isSelected && (
           <div className="absolute top-4 right-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
             Section {index + 1} • Selected
+          </div>
+        )}
+
+        {/* Mobile touch instruction overlay */}
+        {isMobile && isDragging && (
+          <div className="absolute inset-0 bg-blue-100/50 border-2 border-blue-400 border-dashed rounded-xl flex items-center justify-center">
+            <div className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+              Drag to reorder section
+            </div>
           </div>
         )}
       </div>

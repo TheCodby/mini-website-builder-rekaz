@@ -116,7 +116,7 @@ export const SectionLibrary = ({
               </h2>
               <p className="text-sm text-gray-500">
                 {isMobile
-                  ? "Click to add sections to your page"
+                  ? "Tap to add sections or hold & drag to position them"
                   : "Drag or click to add sections to your page"}
               </p>
             </>

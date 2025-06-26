@@ -6,10 +6,11 @@ interface DropZoneProps {
   index: number;
   isActive: boolean;
   isOver: boolean;
+  isMobile?: boolean;
 }
 
 export const DropZone = memo<DropZoneProps>(
-  ({ id, index, isActive, isOver }) => {
+  ({ id, index, isActive, isOver, isMobile = false }) => {
     const { setNodeRef } = useDroppable({
       id,
       data: {
@@ -24,21 +25,27 @@ export const DropZone = memo<DropZoneProps>(
       <div
         ref={setNodeRef}
         className={`transition-all duration-200 ease-in-out ${
-          isOver ? "h-20 opacity-100" : "h-12 opacity-60"
+          isOver
+            ? "h-24 opacity-100"
+            : isMobile
+            ? "h-16 opacity-80"
+            : "h-12 opacity-60"
         }`}
       >
         <div
           className={`h-full border-2 border-dashed rounded-xl flex items-center justify-center transition-all duration-200 ${
-            isOver ? "border-blue-400 bg-blue-50" : "border-gray-300 bg-gray-50"
-          }`}
+            isOver
+              ? "border-blue-400 bg-blue-50 drop-zone-active"
+              : "border-gray-300 bg-gray-50"
+          } ${isMobile ? "touch-target" : ""}`}
         >
           <div
-            className={`flex items-center space-x-2 text-sm font-medium transition-colors duration-200 ${
+            className={`flex items-center space-x-2 font-medium transition-colors duration-200 ${
               isOver ? "text-blue-600" : "text-gray-500"
-            }`}
+            } ${isMobile ? "text-sm" : "text-sm"}`}
           >
             <svg
-              className="w-4 h-4"
+              className={`${isMobile ? "w-5 h-5" : "w-4 h-4"}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -51,7 +58,11 @@ export const DropZone = memo<DropZoneProps>(
               />
             </svg>
             <span>
-              {isOver ? "Drop section here" : `Position ${index + 1}`}
+              {isOver
+                ? isMobile
+                  ? "Release to drop here"
+                  : "Drop section here"
+                : `Position ${index + 1}`}
             </span>
           </div>
         </div>

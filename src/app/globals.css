@@ -49,3 +49,47 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+/* Touch-friendly drag and drop improvements */
+.touch-none {
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Improve touch targets for mobile */
+@media (max-width: 768px) {
+  /* Minimum touch target size for mobile */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Disable text selection during drag operations */
+  .dragging * {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /* Better visual feedback for dragging on mobile */
+  .mobile-drag-active {
+    transform: scale(1.05) rotate(2deg);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    z-index: 1000;
+  }
+}
+
+/* Enhanced drop zone visibility on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .drop-zone-active {
+    border-width: 3px;
+    border-color: #3b82f6;
+    background-color: rgba(59, 130, 246, 0.1);
+  }
+}

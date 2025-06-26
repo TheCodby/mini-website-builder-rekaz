@@ -60,6 +60,9 @@ export const BuilderArea = memo<BuilderAreaProps>(
                   {sections.length} section{sections.length !== 1 ? "s" : ""}{" "}
                   added
                   {isMobile && selectedSectionId && " • Tap to edit properties"}
+                  {isMobile &&
+                    !selectedSectionId &&
+                    " • Hold & drag to reorder"}
                   {!isMobile && " • Drag to reorder"}
                 </p>
               </div>
@@ -111,17 +114,19 @@ export const BuilderArea = memo<BuilderAreaProps>(
                     <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
                     {isMobile
                       ? "Add sections to build your page structure"
-                      : "Drag to reorder sections"}
+                      : "Drag sections from the library to add them"}
                   </div>
                   <div className="flex items-center text-sm text-gray-500">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                    Click sections to customize their content
+                    {isMobile
+                      ? "Tap sections to customize their content"
+                      : "Click sections to customize their content"}
                   </div>
                   <div className="flex items-center text-sm text-gray-500">
                     <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
                     {isMobile
-                      ? "Use preview mode to see the final result"
-                      : "Drag to reorder sections"}
+                      ? "Hold & drag sections to reorder them"
+                      : "Drag sections to reorder them"}
                   </div>
                 </div>
               </div>
@@ -133,6 +138,7 @@ export const BuilderArea = memo<BuilderAreaProps>(
                   index={0}
                   isActive={isDragging}
                   isOver={overId === "drop-zone-0"}
+                  isMobile={isMobile}
                 />
               )}
             </div>
@@ -154,6 +160,7 @@ export const BuilderArea = memo<BuilderAreaProps>(
                     index={0}
                     isActive={isDragging}
                     isOver={overId === "drop-zone-0"}
+                    isMobile={isMobile}
                   />
                 )}
 
@@ -190,6 +197,7 @@ export const BuilderArea = memo<BuilderAreaProps>(
                         index={index + 1}
                         isActive={isDragging}
                         isOver={overId === `drop-zone-${index + 1}`}
+                        isMobile={isMobile}
                       />
                     )}
                   </div>
