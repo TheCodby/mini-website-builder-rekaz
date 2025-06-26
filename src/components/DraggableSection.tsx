@@ -56,7 +56,9 @@ export const DraggableSection = memo<DraggableSectionProps>(
         <div
           {...attributes}
           {...listeners}
-          className={`absolute top-4 left-4 z-10 transition-opacity duration-200 ${
+          className={`absolute ${
+            isMobile ? "top-3 left-3" : "top-4 left-4"
+          } z-10 transition-opacity duration-200 ${
             isMobile
               ? "opacity-100 cursor-grab active:cursor-grabbing"
               : `opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing ${
@@ -68,12 +70,14 @@ export const DraggableSection = memo<DraggableSectionProps>(
           } ${section.type} section`}
         >
           <div
-            className={`bg-white/90 backdrop-blur-sm border border-gray-200 rounded-lg p-2 shadow-sm hover:bg-white hover:shadow-md transition-all duration-200 ${
-              isMobile ? "touch-none" : ""
+            className={`bg-white/95 backdrop-blur-sm border border-gray-300 rounded-lg transition-all duration-200 ${
+              isMobile
+                ? "p-3 shadow-md hover:bg-white hover:shadow-lg min-h-[44px] min-w-[44px] flex items-center justify-center"
+                : "p-2 shadow-sm hover:bg-white hover:shadow-md"
             }`}
           >
             <svg
-              className="w-4 h-4 text-gray-600"
+              className={`${isMobile ? "w-5 h-5" : "w-4 h-4"} text-gray-600`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -112,9 +116,9 @@ export const DraggableSection = memo<DraggableSectionProps>(
 
         {/* Mobile touch instruction overlay */}
         {isMobile && isDragging && (
-          <div className="absolute inset-0 bg-blue-100/50 border-2 border-blue-400 border-dashed rounded-xl flex items-center justify-center">
-            <div className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-              Drag to reorder section
+          <div className="absolute inset-0 bg-primary-100/60 border-2 border-primary-400 border-dashed rounded-xl flex items-center justify-center backdrop-blur-sm">
+            <div className="bg-primary-500 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
+              🚀 Drag to reorder section
             </div>
           </div>
         )}

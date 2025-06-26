@@ -62,7 +62,7 @@ export const BuilderArea = memo<BuilderAreaProps>(
                   {isMobile && selectedSectionId && " • Tap to edit properties"}
                   {isMobile &&
                     !selectedSectionId &&
-                    " • Hold & drag to reorder"}
+                    " • Touch & hold drag handle to reorder"}
                   {!isMobile && " • Drag to reorder"}
                 </p>
               </div>
